@@ -10,6 +10,10 @@ class Database {
 
             if (!hasModel) {
                 uniqueModels.push(model);
+            } else {
+                console.warn(
+                    `Tried to register duplicate Model: '${model.toString()}'.`
+                );
             }
 
             return uniqueModels;

@@ -1,6 +1,13 @@
 import Model from "../Model";
 
 class User extends Model {
+    /**
+     * @returns {string}
+     */
+    static toString() {
+        return "User";
+    }
+
     fields() {
         return {
             name: String,
