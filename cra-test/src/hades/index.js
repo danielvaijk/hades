@@ -14,7 +14,7 @@ function regularReducer(state = initialState, action) {
 
 const database = new Database(User, Robot, User);
 
-const storeBoring = createStore(
+const store = createStore(
     combineReducers({
         regular: regularReducer,
         database: database.reducer(),
@@ -22,4 +22,11 @@ const storeBoring = createStore(
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-export default storeBoring;
+const actionOne = {
+    type: "TEST",
+    payload: {},
+};
+
+store.dispatch(actionOne);
+
+export default store;

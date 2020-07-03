@@ -1,10 +1,19 @@
 class Database {
     /**
-     * @param  {Model[]} allModel
+     * @param  {Model[]} models
      */
-    constructor(...allModel) {
-        // TODO: Only add unique models.
-        this.RegisteredModels = allModel;
+    constructor(...models) {
+        this.RegisteredModels = models.reduce((uniqueModels, model) => {
+            const hasModel = uniqueModels.some((uniqueModel) => {
+                return uniqueModel === model;
+            });
+
+            if (!hasModel) {
+                uniqueModels.push(model);
+            }
+
+            return uniqueModels;
+        }, []);
     }
 
     reducer() {
