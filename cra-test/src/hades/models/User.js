@@ -8,7 +8,7 @@ class User extends Model {
         return "User";
     }
 
-    fields() {
+    static fields() {
         return {
             name: String,
             age: Number,
@@ -22,6 +22,12 @@ class User extends Model {
      * @returns {Object}
      */
     static reducer(session, action) {
+        switch (action.type) {
+            case "CREATE USER":
+                User.create(action.payload);
+                break;
+        }
+
         session.state.users = session.state.users ? session.state.users + 1 : 1;
     }
 }

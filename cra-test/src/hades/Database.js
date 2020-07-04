@@ -29,7 +29,7 @@ class Database {
         return (state, action) => {
             const session = this.createSession(state || {});
 
-            this.createTablesFromRegisteredModels(session);
+            this.createTablesForModelsInSession(session);
             this.applyReducersFromModelsInSession(session, action);
 
             return session.state;
@@ -42,16 +42,20 @@ class Database {
      * @returns {Object}
      */
     createSession(state) {
-        return {
-            state,
-            Models: this.RegisteredModels,
-        };
+        const session = { state };
+        const processedModels = this.RegisteredModels.map((Model) => {
+            return Model.withSession(session);
+        });
+
+        session.Models = processedModels;
+
+        return session;
     }
 
     /**
      * @param {Object} session
      */
-    createTablesFromRegisteredModels(session) {
+    createTablesForModelsInSession(session) {
         session.Models.forEach((Model) => {
             session.state = {
                 ...session.state,
@@ -67,7 +71,7 @@ class Database {
     applyReducersFromModelsInSession(session, action) {
         session.Models.forEach((Model) => {
             if (typeof Model.reducer === "function") {
-                Model.reducer(session, action);
+                Model.reducer.call(Model, session, action);
             }
         });
     }

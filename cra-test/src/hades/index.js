@@ -23,8 +23,8 @@ const store = createStore(
 );
 
 const actionOne = {
-    type: "TEST",
-    payload: {},
+    type: "CREATE USER",
+    payload: { name: "Daniel", age: 22 },
 };
 
 store.dispatch(actionOne);
