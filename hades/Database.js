@@ -1,4 +1,4 @@
-import Table from "./Table";
+import { Table } from "./Table";
 
 class Database {
     /**
@@ -80,4 +80,4 @@ class Database {
     }
 }
 
-export default Database;
+export { Database };

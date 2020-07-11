@@ -1,4 +1,4 @@
-import Model from "../Model";
+import { Model } from "hades";
 
 class Robot extends Model {
     /**

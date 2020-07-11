@@ -22,4 +22,4 @@ class Table {
     }
 }
 
-export default Table;
+export { Table };

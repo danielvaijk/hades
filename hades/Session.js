@@ -63,4 +63,4 @@ class Session {
     }
 }
 
-export default Session;
+export { Session };

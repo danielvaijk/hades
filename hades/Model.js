@@ -1,5 +1,5 @@
-import Table from "./Table";
-import Session from "./Session";
+import { Table } from "./Table";
+import { Session } from "./Session";
 
 class Model {
     /**
@@ -30,4 +30,4 @@ class Model {
 
 // TODO: Make static toString() method required abstract.
 
-export default Model;
+export { Model };
