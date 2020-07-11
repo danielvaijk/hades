@@ -18,11 +18,13 @@ class Robot extends Model {
     /**
      * @param {Object} session
      * @param {Object} action
-     *
-     * @returns {Object|undefined}
      */
     static reducer(session, action) {
-        return undefined;
+        switch (action) {
+            default:
+                // Ignore this action.
+                break;
+        }
     }
 }
 

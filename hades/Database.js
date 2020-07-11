@@ -23,6 +23,7 @@ class Database {
     }
 
     /**
+     * TODO: Add try/catch, and throw all errors/warnings.
      * @returns {Function}
      */
     reducer() {
@@ -72,6 +73,8 @@ class Database {
         session.Models.forEach((Model) => {
             if (typeof Model.reducer === "function") {
                 Model.reducer.call(Model, session, action);
+            } else {
+                // No reducer defined for this model. Ignore.
             }
         });
     }

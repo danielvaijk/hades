@@ -18,13 +18,15 @@ class User extends Model {
     /**
      * @param {Object} session
      * @param {Object} action
-     *
-     * @returns {Object}
      */
     static reducer(session, action) {
         switch (action.type) {
             case "CREATE USER":
                 User.create(action.payload);
+                break;
+
+            default:
+                // Ignore this action.
                 break;
         }
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import index from "./hades/index";
+import hades from "hades";
 
 function App() {
     return <p>Hello!</p>;

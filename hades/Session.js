@@ -20,9 +20,11 @@ class Session {
             );
 
             return false;
+        } else {
+            return true;
         }
 
-        return true;
+        // TODO: Validate properties against field definitions.
     }
 
     /**
@@ -39,9 +41,15 @@ class Session {
     static applyStateMutationCreate(Model, properties) {
         const passedBouncerChecks = this.runMutationBouncer(Model, properties);
 
-        if (!passedBouncerChecks) {
+        if (passedBouncerChecks) {
+            // Passed bouncer validation checks. Allowed to continue.
+        } else {
             return;
         }
+
+        // TODO: Add 'identifier' field type, so we know if there's a specific field value
+        // that should be used as the identifier (like a uuid, instead of id).
+        // TODO: Also, make sure there are no ID collisions (trying to create model with non-unique identifier).
 
         const modelTable = Model.session.state[Model.getTableKey()];
         const modelId = Object.keys(modelTable.rows).length + 1;
