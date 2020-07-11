@@ -1,2 +1,2 @@
-export { Model } from "./Model";
-export { Database } from "./Database";
+export { Model } from "./src/Model";
+export { Database } from "./src/Database";

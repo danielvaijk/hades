@@ -2,7 +2,7 @@ import { Table } from "./Table";
 
 class Database {
     /**
-     * @param  {Model[]} models
+     * @param {Model[]} models
      */
     constructor(...models) {
         this.RegisteredModels = models.reduce((uniqueModels, model) => {
