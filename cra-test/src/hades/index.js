@@ -22,11 +22,12 @@ const store = createStore(
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 
-const actionOne = {
+const createUser = (name, age) => ({
     type: "CREATE USER",
-    payload: { name: "Daniel", age: 22 },
-};
+    payload: { age, name },
+});
 
-store.dispatch(actionOne);
+store.dispatch(createUser("Daniel", 22));
+store.dispatch(createUser("John", 43));
 
 export default store;

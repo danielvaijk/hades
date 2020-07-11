@@ -1,5 +1,3 @@
-import Table from "./Table";
-
 class Session {
     /**
      * @param {Model} Model
@@ -28,6 +26,13 @@ class Session {
     }
 
     /**
+     * @param {Model} model
+     */
+    static passOverStateMutationsFromLocalCopyToSessionState(Model) {
+        Model.sessionReference.state = Model.session.state;
+    }
+
+    /**
      * @param {Model} Model
      * @param {Object} properties
      */
@@ -38,11 +43,15 @@ class Session {
             return;
         }
 
-        // TODO: Validate properties against field definitions.
+        const modelTable = Model.session.state[Model.getTableKey()];
+        const modelId = Object.keys(modelTable.rows).length + 1;
 
-        Model.session.state[Table.createModelTableName(Model)].rows.push({
+        modelTable.rows[modelId] = {
+            id: modelId,
             ...properties,
-        });
+        };
+
+        this.passOverStateMutationsFromLocalCopyToSessionState(Model);
     }
 }
 

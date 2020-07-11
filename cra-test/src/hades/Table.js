@@ -7,7 +7,7 @@ class Table {
     static createFromModel(Model) {
         return {
             [this.createModelTableName(Model)]: {
-                rows: [],
+                rows: {},
             },
         };
     }

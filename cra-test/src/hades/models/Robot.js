@@ -19,12 +19,10 @@ class Robot extends Model {
      * @param {Object} session
      * @param {Object} action
      *
-     * @returns {Object}
+     * @returns {Object|undefined}
      */
     static reducer(session, action) {
-        session.state.robots = session.state.robots
-            ? session.state.robots + 1
-            : 1;
+        return undefined;
     }
 }
 

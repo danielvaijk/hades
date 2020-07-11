@@ -27,8 +27,6 @@ class User extends Model {
                 User.create(action.payload);
                 break;
         }
-
-        session.state.users = session.state.users ? session.state.users + 1 : 1;
     }
 }
 

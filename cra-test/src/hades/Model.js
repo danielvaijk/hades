@@ -10,10 +10,18 @@ class Model {
     }
 
     /**
+     * @returns {string|null}
+     */
+    static getTableKey() {
+        return this.tableKey || null;
+    }
+
+    /**
      * @param {Object} session
      */
     static withSession(session) {
-        this.session = session;
+        this.sessionReference = session;
+        this.session = JSON.parse(JSON.stringify(session));
         this.tableKey = Table.createModelTableName(this);
 
         return this;
