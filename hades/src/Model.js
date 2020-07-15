@@ -10,6 +10,15 @@ class Model {
     }
 
     /**
+     * @param {string} modelId
+     *
+     * @returns {Model}
+     */
+    static withId(modelId) {
+        return new Model(this.session.state[this.getTableKey()].rows[modelId]);
+    }
+
+    /**
      * @returns {string|null}
      */
     static getTableKey() {
