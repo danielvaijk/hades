@@ -36,6 +36,16 @@ class Session {
 
     /**
      * @param {Model} Model
+     */
+    static applyStateMutationDelete(Model) {
+        const modelTable = Model.session.state[Model.tableKey];
+        delete modelTable.rows[Model.fields.id];
+
+        this.passOverStateMutationsFromLocalCopyToSessionState(Model);
+    }
+
+    /**
+     * @param {Model} Model
      * @param {Object} properties
      */
     static applyStateMutationCreate(Model, properties) {

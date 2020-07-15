@@ -25,6 +25,11 @@ class User extends Model {
                 User.create(action.payload);
                 break;
 
+            case "DELETE USER":
+                const user = User.withId(action.payload.id);
+                user.delete();
+                break;
+
             default:
                 // Ignore this action.
                 break;

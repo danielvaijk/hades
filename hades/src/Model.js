@@ -3,6 +3,23 @@ import { Session } from "./Session";
 
 class Model {
     /**
+     * @param {Model} Model
+     * @param {string} modelId
+     */
+    constructor(Model, modelId) {
+        this.session = Model.session;
+        this.tableKey = Model.tableKey;
+        this.sessionReference = Model.sessionReference;
+        this.fields = this.session.state[this.tableKey].rows[modelId];
+    }
+
+    /**
+     */
+    delete() {
+        Session.applyStateMutationDelete(this);
+    }
+
+    /**
      * @param {Object} properties
      */
     static create(properties) {
@@ -15,7 +32,7 @@ class Model {
      * @returns {Model}
      */
     static withId(modelId) {
-        return new Model(this.session.state[this.getTableKey()].rows[modelId]);
+        return new Model(this, modelId);
     }
 
     /**
