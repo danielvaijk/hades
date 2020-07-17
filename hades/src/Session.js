@@ -25,52 +25,52 @@ class Session {
     }
 
     /**
+     * @param {Model} modelClass
+     */
+    getPointerForModelTable(modelClass) {
+        return this.state[modelClass.getTableKey()];
+    }
+
+    /**
      * @param {Object} options
      */
     applyMutation(options) {
+        /**
+         * @returns {Table}
+         */
+        const getPointerModelTable = () => {
+            return this.getPointerForModelTable(options.modelClass);
+        };
+
         switch (options.type) {
-            case "CREATE": {
+            case "CREATE":
                 this.runPropertyMutationBouncer(
                     options.modelClass,
-                    options.properties
+                    options.fields
                 );
 
-                const key = options.modelClass.getTableKey();
-                const modelTable = this.state[key];
-
-                const modelId = Object.keys(modelTable.rows).length + 1;
-
-                modelTable.rows[modelId] = {
-                    id: modelId,
-                    ...options.properties,
-                };
+                getPointerModelTable().insertRow(options.fields);
                 break;
-            }
 
-            case "DELETE": {
-                const key = options.modelClass.tableKey;
-                const modelTable = this.state[key];
-
-                delete modelTable.rows[options.modelId];
+            case "DELETE":
+                getPointerModelTable().deleteRow(options.modelId);
                 break;
-            }
 
-            default: {
+            default:
                 throw new RangeError(`Unexpected mutation type: '${type}'`);
-            }
         }
     }
 
     /**
      * @param {Model} Model
-     * @param {Object} properties
+     * @param {Object} fields
      *
      * @throws {Error}
      */
-    runPropertyMutationBouncer(Model, properties) {
-        const fields = Model.fields();
-        const superfluousPropertyName = Object.keys(properties).find((key) => {
-            return fields[key] === undefined;
+    runPropertyMutationBouncer(Model, fields) {
+        const fieldDefinition = Model.fields();
+        const superfluousPropertyName = Object.keys(fields).find((key) => {
+            return fieldDefinition[key] === undefined;
         });
 
         if (superfluousPropertyName) {

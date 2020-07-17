@@ -1,15 +1,72 @@
 class Table {
     /**
-     * @param {Model} Model
-     *
+     * @param {Model} modelClass
+     */
+    constructor(modelClass) {
+        this.rows = this.createStorageForRows();
+
+        this.propertySymbolKey = Symbol("key");
+        this.propertySymbolMeta = Symbol("meta");
+
+        this[this.propertySymbolMeta] = this.createStorageForMeta();
+        this[this.propertySymbolKey] = this.createModelTableName(modelClass);
+    }
+
+    /**
      * @returns {Object}
      */
-    static createFromModel(Model) {
-        return {
-            [this.createModelTableName(Model)]: {
-                rows: {},
-            },
+    getMeta() {
+        return this[this.propertySymbolMeta];
+    }
+
+    /**
+     * @returns {string}
+     */
+    getKey() {
+        return this[this.propertySymbolKey];
+    }
+
+    /**
+     * @returns {Object}
+     */
+    createStorageForRows() {
+        return {};
+    }
+
+    /**
+     * @returns {Object}
+     */
+    createStorageForMeta() {
+        return { lastId: 0 };
+    }
+
+    /**
+     * @returns {number}
+     */
+    getNextId() {
+        return this.getMeta().lastId + 1;
+    }
+
+    /**
+     * @param {Object} modelFields
+     */
+    insertRow(modelFields) {
+        const modelId = this.getNextId();
+        const { id, ...modelFieldsFiltered } = modelFields;
+
+        this.rows[modelId] = {
+            id: modelId,
+            ...modelFieldsFiltered,
         };
+
+        this.getMeta().lastId++;
+    }
+
+    /**
+     * @param {string} rowId
+     */
+    deleteRow(rowId) {
+        delete this.rows[rowId];
     }
 
     /**
@@ -17,8 +74,8 @@ class Table {
      *
      * @returns {string}
      */
-    static createModelTableName(Model) {
-        return `table_${Model.toString().toLowerCase()}s`;
+    createModelTableName(Model) {
+        return `table_${Model.toString().toLowerCase()}`;
     }
 }
 

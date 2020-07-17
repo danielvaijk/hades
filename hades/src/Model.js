@@ -1,4 +1,3 @@
-import { Table } from "./Table";
 import { Session } from "./Session";
 
 class Model {
@@ -24,11 +23,11 @@ class Model {
     }
 
     /**
-     * @param {Object} properties
+     * @param {Object} fields
      */
-    static create(properties) {
+    static create(fields) {
         this.session.applyMutation({
-            properties,
+            fields,
             type: "CREATE",
             modelClass: this,
         });
@@ -51,13 +50,17 @@ class Model {
     }
 
     /**
+     * @param {string} tableKey
+     */
+    static addTableKey(tableKey) {
+        this.tableKey = tableKey;
+    }
+
+    /**
      * @param {Session} session
      */
-    static withSession(session) {
+    static addSession(session) {
         this.session = session;
-        this.tableKey = Table.createModelTableName(this);
-
-        return this;
     }
 }
 

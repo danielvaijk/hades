@@ -6,17 +6,17 @@ class Database {
      * @param {Model[]} models
      */
     constructor(...models) {
-        this.RegisteredModels = models.reduce((uniqueModels, model) => {
+        this.registeredModels = models.reduce((uniqueModels, Model) => {
             const hasModel = uniqueModels.some((uniqueModel) => {
-                return uniqueModel === model;
+                return uniqueModel === Model;
             });
 
             if (hasModel) {
                 console.warn(
-                    `Tried to register duplicate Model: '${model.toString()}'.`
+                    `Tried to register duplicate Model: '${Model.toString()}'.`
                 );
             } else {
-                uniqueModels.push(model);
+                uniqueModels.push(Model);
             }
 
             return uniqueModels;
@@ -31,8 +31,8 @@ class Database {
         return (state = {}, action) => {
             const session = this.createSession(state);
 
-            this.createTablesForModelsInSession(session);
-            this.applyReducersFromModelsInSession(session, action);
+            this.forModelsInSessionCreateTablesIfNeeded(session);
+            this.forModelsInSessionApplyReducers(session, action);
 
             return session.state;
         };
@@ -44,23 +44,28 @@ class Database {
      * @returns {Session}
      */
     createSession(state) {
-        const session = new Session(JSON.parse(JSON.stringify(state)));
-        const processedModelClasses = this.RegisteredModels.map((Model) => {
-            return Model.withSession(session);
+        const session = new Session(state);
+
+        this.registeredModels.forEach((Model) => {
+            Model.addSession(session);
         });
 
-        return session.withModelClasses(processedModelClasses);
+        return session.withModelClasses(this.registeredModels);
     }
 
     /**
      * @param {Object} session
      */
-    createTablesForModelsInSession(session) {
+    forModelsInSessionCreateTablesIfNeeded(session) {
         session.models.forEach((Model) => {
             if (session.state[Model.tableKey]) {
                 // Table already exists. Ignore.
             } else {
-                session.mergeIntoState(Table.createFromModel(Model));
+                const table = new Table(Model);
+                const tableKey = table.getKey();
+
+                Model.addTableKey(tableKey);
+                session.mergeIntoState({ [tableKey]: table });
             }
         });
     }
@@ -69,7 +74,7 @@ class Database {
      * @param {Object} session
      * @param {Object} action
      */
-    applyReducersFromModelsInSession(session, action) {
+    forModelsInSessionApplyReducers(session, action) {
         session.models.forEach((Model) => {
             if (typeof Model.reducer === "function") {
                 Model.reducer.call(Model, action);
