@@ -12,9 +12,7 @@ class Database {
             });
 
             if (hasModel) {
-                console.warn(
-                    `Tried to register duplicate Model: '${Model.toString()}'.`
-                );
+                this.createWarningDuplicateModel(Model);
             } else {
                 uniqueModels.push(Model);
             }
@@ -46,11 +44,12 @@ class Database {
     createSession(state) {
         const session = new Session(state);
 
+        session.addModels(this.registeredModels);
         this.registeredModels.forEach((Model) => {
             Model.addSession(session);
         });
 
-        return session.withModelClasses(this.registeredModels);
+        return session;
     }
 
     /**
@@ -82,6 +81,15 @@ class Database {
                 // No reducer defined for this model. Ignore.
             }
         });
+    }
+
+    /**
+     * @param {Model} Model
+     */
+    createWarningDuplicateModel(Model) {
+        console.warn(
+            `Tried to register duplicate Model: '${Model.toString()}'.`
+        );
     }
 }
 

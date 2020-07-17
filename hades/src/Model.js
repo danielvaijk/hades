@@ -16,8 +16,8 @@ class Model {
      */
     delete() {
         this.session.applyMutation({
+            model: this,
             type: "DELETE",
-            modelClass: this,
             modelId: this.fields.id,
         });
     }
@@ -28,8 +28,8 @@ class Model {
     static create(fields) {
         this.session.applyMutation({
             fields,
+            Model: this,
             type: "CREATE",
-            modelClass: this,
         });
     }
 

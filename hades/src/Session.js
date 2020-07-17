@@ -7,14 +7,10 @@ class Session {
     }
 
     /**
-     * @param {Model[]} modelClasses
-     *
-     * @returns {Session}
+     * @param {Model[]} models
      */
-    withModelClasses(modelClasses) {
-        this.models = modelClasses;
-
-        return this;
+    addModels(models) {
+        this.models = models;
     }
 
     /**
@@ -25,10 +21,19 @@ class Session {
     }
 
     /**
-     * @param {Model} modelClass
+     * @param {Object} options
+     *
+     * @returns {Table}
+     * @throws {ReferenceError}
      */
-    getPointerForModelTable(modelClass) {
-        return this.state[modelClass.getTableKey()];
+    getPointerForModelTable(options) {
+        if (options.model) {
+            return this.state[options.model.tableKey];
+        } else if (options.Model) {
+            return this.state[options.Model.getTableKey()];
+        } else {
+            throw new ReferenceError("Cannot get model table pointer.");
+        }
     }
 
     /**
@@ -39,16 +44,13 @@ class Session {
          * @returns {Table}
          */
         const getPointerModelTable = () => {
-            return this.getPointerForModelTable(options.modelClass);
+            return this.getPointerForModelTable(options);
         };
 
         switch (options.type) {
             case "CREATE":
-                this.runPropertyMutationBouncer(
-                    options.modelClass,
-                    options.fields
-                );
 
+                this.runPropertyMutationBouncer(options.Model, options.fields);
                 getPointerModelTable().insertRow(options.fields);
                 break;
 
@@ -84,7 +86,7 @@ class Session {
             // Passed bouncer checks.
         }
 
-        // TODO: Validate properties against field definitions.
+        // TODO: Validate fields against definitions.
     }
 }
 
