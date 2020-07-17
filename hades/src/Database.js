@@ -1,4 +1,5 @@
 import { Table } from "./Table";
+import { Session } from "./Session";
 
 class Database {
     /**
@@ -10,12 +11,12 @@ class Database {
                 return uniqueModel === model;
             });
 
-            if (!hasModel) {
-                uniqueModels.push(model);
-            } else {
+            if (hasModel) {
                 console.warn(
                     `Tried to register duplicate Model: '${model.toString()}'.`
                 );
+            } else {
+                uniqueModels.push(model);
             }
 
             return uniqueModels;
@@ -27,8 +28,8 @@ class Database {
      * @returns {Function}
      */
     reducer() {
-        return (state, action) => {
-            const session = this.createSession(state || {});
+        return (state = {}, action) => {
+            const session = this.createSession(state);
 
             this.createTablesForModelsInSession(session);
             this.applyReducersFromModelsInSession(session, action);
@@ -40,28 +41,27 @@ class Database {
     /**
      * @param {Object} state
      *
-     * @returns {Object}
+     * @returns {Session}
      */
     createSession(state) {
-        const session = { state };
-        const processedModels = this.RegisteredModels.map((Model) => {
+        const session = new Session(JSON.parse(JSON.stringify(state)));
+        const processedModelClasses = this.RegisteredModels.map((Model) => {
             return Model.withSession(session);
         });
 
-        session.Models = processedModels;
-
-        return session;
+        return session.withModelClasses(processedModelClasses);
     }
 
     /**
      * @param {Object} session
      */
     createTablesForModelsInSession(session) {
-        session.Models.forEach((Model) => {
-            session.state = {
-                ...session.state,
-                ...Table.createFromModel(Model),
-            };
+        session.models.forEach((Model) => {
+            if (session.state[Model.tableKey]) {
+                // Table already exists. Ignore.
+            } else {
+                session.mergeIntoState(Table.createFromModel(Model));
+            }
         });
     }
 
@@ -70,9 +70,9 @@ class Database {
      * @param {Object} action
      */
     applyReducersFromModelsInSession(session, action) {
-        session.Models.forEach((Model) => {
+        session.models.forEach((Model) => {
             if (typeof Model.reducer === "function") {
-                Model.reducer.call(Model, session, action);
+                Model.reducer.call(Model, action);
             } else {
                 // No reducer defined for this model. Ignore.
             }

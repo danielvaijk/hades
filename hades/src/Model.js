@@ -10,7 +10,7 @@ class Model {
         this.session = Model.session;
         this.tableKey = Model.tableKey;
         this.sessionReference = Model.sessionReference;
-        this.fields = this.session.state[this.tableKey].rows[modelId];
+        this.fields = this.session.state[this.tableKey].rows[modelId] || {};
     }
 
     /**
@@ -23,7 +23,11 @@ class Model {
      * @param {Object} properties
      */
     static create(properties) {
-        Session.applyStateMutationCreate(this, properties);
+        this.session.applyMutation({
+            properties,
+            type: "CREATE",
+            modelClass: this,
+        });
     }
 
     /**
@@ -43,11 +47,10 @@ class Model {
     }
 
     /**
-     * @param {Object} session
+     * @param {Session} session
      */
     static withSession(session) {
-        this.sessionReference = session;
-        this.session = JSON.parse(JSON.stringify(session));
+        this.session = session;
         this.tableKey = Table.createModelTableName(this);
 
         return this;

@@ -1,27 +1,74 @@
 class Session {
     /**
+     * @param {Object} state
+     */
+    constructor(state) {
+        this.state = state;
+    }
+
+    /**
+     * @param {Model[]} modelClasses
+     *
+     * @returns {Session}
+     */
+    withModelClasses(modelClasses) {
+        this.models = modelClasses;
+
+        return this;
+    }
+
+    /**
+     * @param {Object} state
+     */
+    mergeIntoState(state) {
+        Object.assign(this.state, state);
+    }
+
+    /**
+     * @param {Object} options
+     */
+    applyMutation(options) {
+        switch (options.type) {
+            case "CREATE":
+                this.runMutationBouncer(options.modelClass, options.properties);
+
+                const key = options.modelClass.getTableKey();
+                const modelTable = this.state[key];
+
+                const modelId = Object.keys(modelTable.rows).length + 1;
+
+                modelTable.rows[modelId] = {
+                    id: modelId,
+                    ...options.properties,
+                };
+                break;
+
+            default:
+                throw new RangeError(`Unexpected mutation type: '${type}'`);
+        }
+    }
+
+    /**
      * @param {Model} Model
      * @param {Object} properties
      *
-     * @returns {boolean}
+     * @throws {Error}
      */
-    static runMutationBouncer(Model, properties) {
+    runMutationBouncer(Model, properties) {
         const fields = Model.fields();
         const superfluousPropertyName = Object.keys(properties).find((key) => {
             return fields[key] === undefined;
         });
 
         if (superfluousPropertyName) {
-            console.error(
+            throw new Error(
                 [
                     `Cannot apply create mutation via ${Model.toString()} model, `,
                     `found superfluous property '${superfluousPropertyName}'.`,
                 ].join("")
             );
-
-            return false;
         } else {
-            return true;
+            // Passed bouncer checks..
         }
 
         // TODO: Validate properties against field definitions.
@@ -40,34 +87,6 @@ class Session {
     static applyStateMutationDelete(Model) {
         const modelTable = Model.session.state[Model.tableKey];
         delete modelTable.rows[Model.fields.id];
-
-        this.passOverStateMutationsFromLocalCopyToSessionState(Model);
-    }
-
-    /**
-     * @param {Model} Model
-     * @param {Object} properties
-     */
-    static applyStateMutationCreate(Model, properties) {
-        const passedBouncerChecks = this.runMutationBouncer(Model, properties);
-
-        if (passedBouncerChecks) {
-            // Passed bouncer validation checks. Allowed to continue.
-        } else {
-            return;
-        }
-
-        // TODO: Add 'identifier' field type, so we know if there's a specific field value
-        // that should be used as the identifier (like a uuid, instead of id).
-        // TODO: Also, make sure there are no ID collisions (trying to create model with non-unique identifier).
-
-        const modelTable = Model.session.state[Model.getTableKey()];
-        const modelId = Object.keys(modelTable.rows).length + 1;
-
-        modelTable.rows[modelId] = {
-            id: modelId,
-            ...properties,
-        };
 
         this.passOverStateMutationsFromLocalCopyToSessionState(Model);
     }
