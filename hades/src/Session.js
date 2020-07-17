@@ -29,8 +29,11 @@ class Session {
      */
     applyMutation(options) {
         switch (options.type) {
-            case "CREATE":
-                this.runMutationBouncer(options.modelClass, options.properties);
+            case "CREATE": {
+                this.runPropertyMutationBouncer(
+                    options.modelClass,
+                    options.properties
+                );
 
                 const key = options.modelClass.getTableKey();
                 const modelTable = this.state[key];
@@ -42,9 +45,19 @@ class Session {
                     ...options.properties,
                 };
                 break;
+            }
 
-            default:
+            case "DELETE": {
+                const key = options.modelClass.tableKey;
+                const modelTable = this.state[key];
+
+                delete modelTable.rows[options.modelId];
+                break;
+            }
+
+            default: {
                 throw new RangeError(`Unexpected mutation type: '${type}'`);
+            }
         }
     }
 
@@ -54,7 +67,7 @@ class Session {
      *
      * @throws {Error}
      */
-    runMutationBouncer(Model, properties) {
+    runPropertyMutationBouncer(Model, properties) {
         const fields = Model.fields();
         const superfluousPropertyName = Object.keys(properties).find((key) => {
             return fields[key] === undefined;
@@ -68,27 +81,10 @@ class Session {
                 ].join("")
             );
         } else {
-            // Passed bouncer checks..
+            // Passed bouncer checks.
         }
 
         // TODO: Validate properties against field definitions.
-    }
-
-    /**
-     * @param {Model} model
-     */
-    static passOverStateMutationsFromLocalCopyToSessionState(Model) {
-        Model.sessionReference.state = Model.session.state;
-    }
-
-    /**
-     * @param {Model} Model
-     */
-    static applyStateMutationDelete(Model) {
-        const modelTable = Model.session.state[Model.tableKey];
-        delete modelTable.rows[Model.fields.id];
-
-        this.passOverStateMutationsFromLocalCopyToSessionState(Model);
     }
 }
 

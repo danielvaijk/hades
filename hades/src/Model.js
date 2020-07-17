@@ -16,7 +16,11 @@ class Model {
     /**
      */
     delete() {
-        Session.applyStateMutationDelete(this);
+        this.session.applyMutation({
+            type: "DELETE",
+            modelClass: this,
+            modelId: this.fields.id,
+        });
     }
 
     /**
