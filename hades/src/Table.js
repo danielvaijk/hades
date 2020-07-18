@@ -64,6 +64,14 @@ class Table {
 
     /**
      * @param {string} rowId
+     * @param {Object} columns
+     */
+    updateRow(rowId, columns) {
+        Object.assign(this.rows[rowId], columns);
+    }
+
+    /**
+     * @param {string} rowId
      */
     deleteRow(rowId) {
         delete this.rows[rowId];

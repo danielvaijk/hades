@@ -1,8 +1,10 @@
 {
     "name": "hades",
-    "description": "A relational database for Redux.",
-    "version": "0.1.0",
     "private": true,
-    "dependencies": {},
-    "scripts": {}
+    "version": "0.1.0",
+    "description": "A relational database for Redux.",
+    "author": {
+        "name": "Daniel van Dijk",
+        "email": "daniel@invidiacreative.net"
+    }
 }

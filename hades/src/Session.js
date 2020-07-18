@@ -46,7 +46,11 @@ class Session {
             case "CREATE":
                 this.runPropertyMutationBouncer(Model, fields);
                 getPointerModelTable().insertRow(fields);
+                break;
 
+            case "UPDATE":
+                this.runPropertyMutationBouncer(Model, fields);
+                getPointerModelTable().updateRow(modelId, fields);
                 break;
 
             case "DELETE":

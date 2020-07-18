@@ -14,13 +14,33 @@ class Model {
     }
 
     /**
+     * @param {Object} fields
+     */
+    update(fields) {
+        this.session.applyMutation({
+            fields,
+            type: "UPDATE",
+            ...this.getPropertiesForInstanceMutation(),
+        });
+    }
+
+    /**
      */
     delete() {
         this.session.applyMutation({
             type: "DELETE",
+            ...this.getPropertiesForInstanceMutation(),
+        });
+    }
+
+    /**
+     * @returns {Object}
+     */
+    getPropertiesForInstanceMutation() {
+        return {
             Model: this.Model,
             modelId: this.fields.id,
-        });
+        };
     }
 
     /**

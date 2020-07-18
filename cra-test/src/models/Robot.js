@@ -8,6 +8,9 @@ class Robot extends Model {
         return "Robot";
     }
 
+    /**
+     * @returns {Object}
+     */
     fields() {
         return {
             name: String,

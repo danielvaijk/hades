@@ -8,6 +8,9 @@ class User extends Model {
         return "User";
     }
 
+    /**
+     * @returns {Object}
+     */
     static fields() {
         return {
             name: String,
@@ -20,18 +23,29 @@ class User extends Model {
      */
     static reducer(action) {
         switch (action.type) {
-            case "CREATE USER":
+            case "CREATE USER": {
                 User.create(action.payload);
                 break;
+            }
 
-            case "DELETE USER":
+            case "UPDATE USER": {
                 const user = User.withId(action.payload.id);
+
+                user.update(action.payload.fields);
+                break;
+            }
+
+            case "DELETE USER": {
+                const user = User.withId(action.payload.id);
+
                 user.delete();
                 break;
+            }
 
-            default:
+            default: {
                 // Ignore this action.
                 break;
+            }
         }
     }
 }

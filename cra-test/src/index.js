@@ -32,6 +32,11 @@ const createUser = (name, age) => ({
     payload: { age, name },
 });
 
+const updateUser = (id, fields) => ({
+    type: "UPDATE USER",
+    payload: { id, fields },
+});
+
 const deleteUserById = (id) => ({
     type: "DELETE USER",
     payload: { id },
@@ -40,6 +45,7 @@ const deleteUserById = (id) => ({
 store.dispatch(createUser("Daniel", 22));
 store.dispatch(createUser("John", 43));
 store.dispatch(deleteUserById(1));
+store.dispatch(updateUser(2, { age: 18 }));
 
 ReactDOM.render(
     <React.StrictMode>

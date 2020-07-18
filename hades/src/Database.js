@@ -6,12 +6,15 @@ class Database {
      * @param {Model[]} models
      */
     constructor(...models) {
-        this.registeredModels = models.reduce((uniqueModels, Model) => {
-            const hasModel = uniqueModels.some((uniqueModel) => {
-                return uniqueModel === Model;
-            });
+        this.registerModels(models);
+    }
 
-            if (hasModel) {
+    /**
+     * @param {Model[]} models
+     */
+    registerModels(models) {
+        this.registeredModels = models.reduce((uniqueModels, Model) => {
+            if (uniqueModels.includes(Model)) {
                 this.createWarningDuplicateModel(Model);
             } else {
                 uniqueModels.push(Model);
@@ -26,6 +29,12 @@ class Database {
      * @returns {Function}
      */
     reducer() {
+        /**
+         * @param {Object} [state]
+         * @param {Object} action
+         *
+         * @returns {Object}
+         */
         return (state = {}, action) => {
             const session = this.createSession(state);
 
@@ -58,7 +67,7 @@ class Database {
     forModelsInSessionCreateTablesIfNeeded(session) {
         session.models.forEach((Model) => {
             if (session.state[Model.tableKey]) {
-                // Table already exists. Ignore.
+                // Table already exists.
             } else {
                 const table = new Table(Model);
                 const tableKey = table.getKey();
@@ -78,7 +87,7 @@ class Database {
             if (typeof Model.reducer === "function") {
                 Model.reducer.call(Model, action);
             } else {
-                // No reducer defined for this model. Ignore.
+                // No reducer defined for this model.
             }
         });
     }
