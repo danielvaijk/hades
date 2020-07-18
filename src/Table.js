@@ -51,6 +51,8 @@ class Table {
      * @param {Object} columns
      */
     insertRow(columns) {
+        // FIXME: Using a random modelId is bad, since we'll end up colliding
+        // with the meta lastId value at some point.
         const modelId = columns.id || this.getNextId();
 
         if (this.rows[modelId]) {

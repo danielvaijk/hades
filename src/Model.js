@@ -1,5 +1,8 @@
 import { Session } from "./Session";
 
+// TODO: Add 'identifier' field type, so we know if there's a specific field value
+// that should be used as the identifier (like a uuid, instead of id).
+// TODO: Also, make sure there are no ID collisions (trying to create model with non-unique identifier).
 class Model {
     /**
      * @param {Model} Model
@@ -10,6 +13,8 @@ class Model {
         this.session = Model.session;
         this.tableKey = Model.tableKey;
         this.sessionReference = Model.sessionReference;
+
+        // TODO: Write a test for scenario where you query with withId and there are no results.
         this.fields = this.session.state[this.tableKey].rows[modelId] || {};
     }
 
