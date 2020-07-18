@@ -21,41 +21,36 @@ class Session {
     }
 
     /**
-     * @param {Object} options
+     * @param {Model} Model
      *
      * @returns {Table}
-     * @throws {ReferenceError}
      */
-    getPointerForModelTable(options) {
-        if (options.model) {
-            return this.state[options.model.tableKey];
-        } else if (options.Model) {
-            return this.state[options.Model.getTableKey()];
-        } else {
-            throw new ReferenceError("Cannot get model table pointer.");
-        }
+    getPointerForModelTable(Model) {
+        return this.state[Model.getTableKey()];
     }
 
     /**
      * @param {Object} options
      */
     applyMutation(options) {
+        const { Model, fields, modelId } = options;
+
         /**
          * @returns {Table}
          */
         const getPointerModelTable = () => {
-            return this.getPointerForModelTable(options);
+            return this.getPointerForModelTable(Model);
         };
 
         switch (options.type) {
             case "CREATE":
+                this.runPropertyMutationBouncer(Model, fields);
+                getPointerModelTable().insertRow(fields);
 
-                this.runPropertyMutationBouncer(options.Model, options.fields);
-                getPointerModelTable().insertRow(options.fields);
                 break;
 
             case "DELETE":
-                getPointerModelTable().deleteRow(options.modelId);
+                getPointerModelTable().deleteRow(modelId);
                 break;
 
             default:

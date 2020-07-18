@@ -6,6 +6,7 @@ class Model {
      * @param {string} modelId
      */
     constructor(Model, modelId) {
+        this.Model = Model;
         this.session = Model.session;
         this.tableKey = Model.tableKey;
         this.sessionReference = Model.sessionReference;
@@ -16,8 +17,8 @@ class Model {
      */
     delete() {
         this.session.applyMutation({
-            model: this,
             type: "DELETE",
+            Model: this.Model,
             modelId: this.fields.id,
         });
     }

@@ -1,15 +1,15 @@
 class Table {
     /**
-     * @param {Model} modelClass
+     * @param {Model} Model
      */
-    constructor(modelClass) {
+    constructor(Model) {
         this.rows = this.createStorageForRows();
 
         this.propertySymbolKey = Symbol("key");
         this.propertySymbolMeta = Symbol("meta");
 
         this[this.propertySymbolMeta] = this.createStorageForMeta();
-        this[this.propertySymbolKey] = this.createModelTableName(modelClass);
+        this[this.propertySymbolKey] = this.createModelTableName(Model);
     }
 
     /**
