@@ -50,7 +50,18 @@ class Model {
         this.session.applyMutation({
             fields,
             Model: this,
-            type: "CREATE",
+            type: "INSERT",
+        });
+    }
+
+    /**
+     * @param {Object} fields
+     */
+    static upsert(fields) {
+        this.session.applyMutation({
+            fields,
+            Model: this,
+            type: "UPSERT",
         });
     }
 

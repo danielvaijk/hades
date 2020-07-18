@@ -35,6 +35,11 @@ class User extends Model {
                 break;
             }
 
+            case "UPSERT USER": {
+                User.upsert(action.payload.fields);
+                break;
+            }
+
             case "DELETE USER": {
                 const user = User.withId(action.payload.id);
 

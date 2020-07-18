@@ -48,18 +48,21 @@ class Table {
     }
 
     /**
-     * @param {Object} modelFields
+     * @param {Object} columns
      */
-    insertRow(modelFields) {
-        const modelId = this.getNextId();
-        const { id, ...modelFieldsFiltered } = modelFields;
+    insertRow(columns) {
+        const modelId = columns.id || this.getNextId();
 
-        this.rows[modelId] = {
-            id: modelId,
-            ...modelFieldsFiltered,
-        };
+        if (this.rows[modelId]) {
+            throw new TypeError("Cannot insert new row with non-unique ID.");
+        } else {
+            this.rows[modelId] = {
+                ...columns,
+                id: modelId,
+            };
 
-        this.getMeta().lastId++;
+            this.getMeta().lastId++;
+        }
     }
 
     /**
@@ -68,6 +71,17 @@ class Table {
      */
     updateRow(rowId, columns) {
         Object.assign(this.rows[rowId], columns);
+    }
+
+    /**
+     * @param {Object} columns
+     */
+    upsertRow(columns) {
+        if (this.rows[columns.id]) {
+            this.updateRow(columns.id, columns);
+        } else {
+            this.insertRow(columns);
+        }
     }
 
     /**

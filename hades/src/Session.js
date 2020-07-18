@@ -34,27 +34,26 @@ class Session {
      */
     applyMutation(options) {
         const { Model, fields, modelId } = options;
-
-        /**
-         * @returns {Table}
-         */
-        const getPointerModelTable = () => {
-            return this.getPointerForModelTable(Model);
-        };
+        const pointerModelTable = this.getPointerForModelTable(Model);
 
         switch (options.type) {
-            case "CREATE":
+            case "INSERT":
                 this.runPropertyMutationBouncer(Model, fields);
-                getPointerModelTable().insertRow(fields);
+                pointerModelTable.insertRow(fields);
                 break;
 
             case "UPDATE":
                 this.runPropertyMutationBouncer(Model, fields);
-                getPointerModelTable().updateRow(modelId, fields);
+                pointerModelTable.updateRow(modelId, fields);
+                break;
+
+            case "UPSERT":
+                this.runPropertyMutationBouncer(Model, fields);
+                pointerModelTable.upsertRow(fields);
                 break;
 
             case "DELETE":
-                getPointerModelTable().deleteRow(modelId);
+                pointerModelTable.deleteRow(modelId);
                 break;
 
             default:
@@ -69,9 +68,24 @@ class Session {
      * @throws {Error}
      */
     runPropertyMutationBouncer(Model, fields) {
+        const fieldWhitelist = ["id"];
         const fieldDefinition = Model.fields();
+
+        /**
+         * @param {string} key
+         */
+        const isFieldSuperfluous = (key) => {
+            return (
+                fieldDefinition[key] === undefined &&
+                !fieldWhitelist.includes(key)
+            );
+        };
+
+        /**
+         * @type {string}
+         */
         const superfluousPropertyName = Object.keys(fields).find((key) => {
-            return fieldDefinition[key] === undefined;
+            return isFieldSuperfluous(key);
         });
 
         if (superfluousPropertyName) {

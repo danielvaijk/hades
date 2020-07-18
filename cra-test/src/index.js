@@ -37,6 +37,11 @@ const updateUser = (id, fields) => ({
     payload: { id, fields },
 });
 
+const upsertUser = (fields) => ({
+    type: "UPSERT USER",
+    payload: { fields },
+});
+
 const deleteUserById = (id) => ({
     type: "DELETE USER",
     payload: { id },
@@ -46,6 +51,8 @@ store.dispatch(createUser("Daniel", 22));
 store.dispatch(createUser("John", 43));
 store.dispatch(deleteUserById(1));
 store.dispatch(updateUser(2, { age: 18 }));
+store.dispatch(upsertUser({ id: 2, age: 20 }));
+store.dispatch(upsertUser({ id: 10, name: "Thijs", age: 23 }));
 
 ReactDOM.render(
     <React.StrictMode>
