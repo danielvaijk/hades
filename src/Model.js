@@ -1,4 +1,5 @@
 import { Session } from "./Session";
+import { ImplementationError } from "./errors";
 
 // TODO: Add 'identifier' field type, so we know if there's a specific field value
 // that should be used as the identifier (like a uuid, instead of id).
@@ -16,6 +17,27 @@ class Model {
 
         // TODO: Write a test for scenario where you query with withId and there are no results.
         this.fields = this.session.state[this.tableKey].rows[modelId] || {};
+    }
+
+    /**
+     * @throws {ImplementationError}
+     */
+    static toString() {
+        throw new ImplementationError("Model#toString must be implemented.");
+    }
+
+    /**
+     * @throws {ImplementationError}
+     */
+    static fields() {
+        throw new ImplementationError("Model#fields must be implemented.");
+    }
+
+    /**
+     * @throws {ImplementationError}
+     */
+    static reducer() {
+        throw new ImplementationError("Model#reducer must be implemented.");
     }
 
     /**
