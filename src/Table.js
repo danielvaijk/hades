@@ -1,3 +1,5 @@
+import { ValidationError } from "./errors";
+
 class Table {
     /**
      * @param {Model} Model
@@ -65,7 +67,7 @@ class Table {
         const modelId = columns.id || this.getNextId();
 
         if (this.rows[modelId]) {
-            throw new TypeError("Cannot insert new row with non-unique ID.");
+            this.createErrorNonUniqueRowIdForInsertion();
         } else {
             this.rows[modelId] = {
                 ...columns,
@@ -100,6 +102,13 @@ class Table {
      */
     deleteRow(rowId) {
         delete this.rows[rowId];
+    }
+
+    /**
+     * @throws {ValidationError}
+     */
+    createErrorNonUniqueRowIdForInsertion() {
+        throw new ValidationError("Cannot insert new row with non-unique ID.");
     }
 }
 

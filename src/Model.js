@@ -123,6 +123,4 @@ class Model {
     }
 }
 
-// TODO: Make static toString() method required abstract.
-
 export { Model };

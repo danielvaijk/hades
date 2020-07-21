@@ -1,3 +1,5 @@
+import { ValidationError, UnexpectedValueError } from "./errors";
+
 class Session {
     /**
      * @param {Object} state
@@ -57,7 +59,7 @@ class Session {
                 break;
 
             default:
-                throw new RangeError(`Unexpected mutation type: '${type}'`);
+                this.createErrorUnexpectedMutationType();
         }
     }
 
@@ -84,22 +86,46 @@ class Session {
         /**
          * @type {string}
          */
-        const superfluousPropertyName = Object.keys(fields).find((key) => {
+        const propertyNameSuperfluous = Object.keys(fields).find((key) => {
             return isFieldSuperfluous(key);
         });
 
-        if (superfluousPropertyName) {
-            throw new Error(
-                [
-                    `Cannot apply create mutation via ${Model.toString()} model, `,
-                    `found superfluous property '${superfluousPropertyName}'.`,
-                ].join("")
+        if (propertyNameSuperfluous) {
+            this.createErrorModelPropertySuperfluous(
+                Model.toString(),
+                propertyNameSuperfluous
             );
         } else {
             // Passed bouncer checks.
         }
 
         // TODO: Validate fields against definitions.
+    }
+
+    /**
+     * @param {string} mutationType
+     *
+     * @throws {UnexpectedValueError}
+     */
+    createErrorUnexpectedMutationType(mutationType) {
+        throw new UnexpectedValueError(
+            `Unexpected mutation type: '${mutationType}'`
+        );
+    }
+
+    /**
+     * @param {string} modelName
+     * @param {string} propertyNameSuperfluous
+     *
+     * @throws {ValidationError}
+     */
+    createErrorModelPropertySuperfluous(modelName, propertyNameSuperfluous) {
+        throw new ValidationError(
+            [
+                `Cannot apply create mutation via ${modelName} model,`,
+                `found superfluous property '${propertyNameSuperfluous}'.`,
+            ].join(" ")
+        );
     }
 }
 

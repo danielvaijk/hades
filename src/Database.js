@@ -15,7 +15,7 @@ class Database {
     registerModels(models) {
         this.registeredModels = models.reduce((uniqueModels, Model) => {
             if (uniqueModels.includes(Model)) {
-                this.createWarningDuplicateModel(Model);
+                this.createWarningDuplicateModel(Model.toString());
             } else {
                 uniqueModels.push(Model);
             }
@@ -93,12 +93,10 @@ class Database {
     }
 
     /**
-     * @param {Model} Model
+     * @param {string} modelName
      */
-    createWarningDuplicateModel(Model) {
-        console.warn(
-            `Tried to register duplicate Model: '${Model.toString()}'.`
-        );
+    createWarningDuplicateModel(modelName) {
+        console.warn(`Tried to register duplicate Model: '${modelName}'.`);
     }
 }
 
