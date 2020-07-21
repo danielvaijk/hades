@@ -66,7 +66,7 @@ class Database {
      */
     forModelsInSessionCreateTablesIfNeeded(session) {
         session.models.forEach((Model) => {
-            if (session.state[Model.tableKey]) {
+            if (session.state[Model.getTableKey()]) {
                 // Table already exists.
             } else {
                 const table = new Table(Model);

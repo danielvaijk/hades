@@ -9,7 +9,7 @@ class Table {
         this.propertySymbolMeta = Symbol("meta");
 
         this[this.propertySymbolMeta] = this.createStorageForMeta();
-        this[this.propertySymbolKey] = this.createModelTableName(Model);
+        this[this.propertySymbolKey] = this.getModelTableName(Model);
     }
 
     /**
@@ -45,6 +45,15 @@ class Table {
      */
     getNextId() {
         return this.getMeta().lastId + 1;
+    }
+
+    /**
+     * @param {Model} Model
+     *
+     * @returns {string}
+     */
+    getModelTableName(Model) {
+        return `table_${Model.toString().toLowerCase()}`;
     }
 
     /**
@@ -91,15 +100,6 @@ class Table {
      */
     deleteRow(rowId) {
         delete this.rows[rowId];
-    }
-
-    /**
-     * @param {Model} Model
-     *
-     * @returns {string}
-     */
-    createModelTableName(Model) {
-        return `table_${Model.toString().toLowerCase()}`;
     }
 }
 
