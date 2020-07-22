@@ -11,6 +11,10 @@ const TABLE_NAME_BASE = "table_";
 const SYMBOL_DESCRIPTION_KEY = "key";
 const SYMBOL_DESCRIPTION_META = "meta";
 
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Table {
     /**
      * @param {Model} Model
@@ -36,8 +40,6 @@ class Table {
      * @param {Object} columns
      */
     insertRow(columns) {
-        // FIXME: Using a random modelId is bad, since we'll end up colliding
-        // with the meta lastId value at some point.
         const modelId = columns.id || this._getNextId();
 
         if (this.rows[modelId]) {

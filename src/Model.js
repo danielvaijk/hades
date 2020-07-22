@@ -2,9 +2,10 @@ import { Session } from "./Session";
 import { MUTATION_TYPES } from "./constants";
 import { ImplementationError } from "./errors";
 
-// TODO: Add 'identifier' field type, so we know if there's a specific field value
-// that should be used as the identifier (like a uuid, instead of id).
-// TODO: Also, make sure there are no ID collisions (trying to create model with non-unique identifier).
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Model {
     /**
      * @param {Model} Model
@@ -17,7 +18,6 @@ class Model {
         this.tableKey = Model.tableKey;
         this.sessionReference = Model.sessionReference;
 
-        // TODO: Write a test for scenario where you query with withId and there are no results.
         this.fields = this.Model.fields().castValuesAgainstDefinition(
             this._getInstanceRowFromState() || {}
         );

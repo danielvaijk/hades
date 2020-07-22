@@ -1,6 +1,10 @@
 import { MUTATION_TYPES } from "./constants";
 import { UnexpectedValueError } from "./errors";
 
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Session {
     /**
      * @param {Object} state

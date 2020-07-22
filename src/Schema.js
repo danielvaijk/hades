@@ -5,6 +5,10 @@ import { ValidationError } from "./errors";
  */
 const FIELD_NAME_IDENTIFIER = "id";
 
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Schema {
     /**
      * @param {Object} schemaDefinition

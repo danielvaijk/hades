@@ -6,6 +6,10 @@ import { Session } from "./Session";
  */
 const TYPE_FUNCTION = "function";
 
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Database {
     /**
      * @param {Model[]} models
@@ -15,7 +19,6 @@ class Database {
     }
 
     /**
-     * TODO: Add try/catch, and throw all errors/warnings.
      * @returns {Function}
      */
     reducer() {
