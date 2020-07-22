@@ -1,4 +1,4 @@
-import { ValidationError, UnexpectedValueError } from "./errors";
+import { UnexpectedValueError } from "./errors";
 
 class Session {
     /**
@@ -23,34 +23,29 @@ class Session {
     }
 
     /**
-     * @param {Model} Model
-     *
-     * @returns {Table}
-     */
-    getPointerForModelTable(Model) {
-        return this.state[Model.getTableKey()];
-    }
-
-    /**
      * @param {Object} options
      */
     applyMutation(options) {
-        const { Model, fields, modelId } = options;
-        const pointerModelTable = this.getPointerForModelTable(Model);
+        const { type, Model, fields, modelId } = options;
+        const pointerModelTable = this._getPointerForModelTable(Model);
 
-        switch (options.type) {
+        if (fields) {
+            Model.runMutationBouncer(fields);
+        } else {
+            // No fields given.
+        }
+
+        // FIXME: Let's not pass fields in if it's undefined?
+        switch (type) {
             case "INSERT":
-                this.runPropertyMutationBouncer(Model, fields);
                 pointerModelTable.insertRow(fields);
                 break;
 
             case "UPDATE":
-                this.runPropertyMutationBouncer(Model, fields);
                 pointerModelTable.updateRow(modelId, fields);
                 break;
 
             case "UPSERT":
-                this.runPropertyMutationBouncer(Model, fields);
                 pointerModelTable.upsertRow(fields);
                 break;
 
@@ -59,47 +54,17 @@ class Session {
                 break;
 
             default:
-                this.createErrorUnexpectedMutationType();
+                this._createErrorUnexpectedMutationType();
         }
     }
 
     /**
      * @param {Model} Model
-     * @param {Object} fields
      *
-     * @throws {Error}
+     * @returns {Table}
      */
-    runPropertyMutationBouncer(Model, fields) {
-        const fieldWhitelist = ["id"];
-        const fieldDefinition = Model.fields();
-
-        /**
-         * @param {string} key
-         */
-        const isFieldSuperfluous = (key) => {
-            return (
-                fieldDefinition[key] === undefined &&
-                !fieldWhitelist.includes(key)
-            );
-        };
-
-        /**
-         * @type {string}
-         */
-        const propertyNameSuperfluous = Object.keys(fields).find((key) => {
-            return isFieldSuperfluous(key);
-        });
-
-        if (propertyNameSuperfluous) {
-            this.createErrorModelPropertySuperfluous(
-                Model.toString(),
-                propertyNameSuperfluous
-            );
-        } else {
-            // Passed bouncer checks.
-        }
-
-        // TODO: Validate fields against definitions.
+    _getPointerForModelTable(Model) {
+        return this.state[Model.getTableKey()];
     }
 
     /**
@@ -107,24 +72,9 @@ class Session {
      *
      * @throws {UnexpectedValueError}
      */
-    createErrorUnexpectedMutationType(mutationType) {
+    _createErrorUnexpectedMutationType(mutationType) {
         throw new UnexpectedValueError(
             `Unexpected mutation type: '${mutationType}'`
-        );
-    }
-
-    /**
-     * @param {string} modelName
-     * @param {string} propertyNameSuperfluous
-     *
-     * @throws {ValidationError}
-     */
-    createErrorModelPropertySuperfluous(modelName, propertyNameSuperfluous) {
-        throw new ValidationError(
-            [
-                `Cannot apply create mutation via ${modelName} model,`,
-                `found superfluous property '${propertyNameSuperfluous}'.`,
-            ].join(" ")
         );
     }
 }

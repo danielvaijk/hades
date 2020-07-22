@@ -11,12 +11,52 @@ class Model {
      */
     constructor(Model, modelId) {
         this.Model = Model;
+        this.modelId = modelId;
         this.session = Model.session;
         this.tableKey = Model.tableKey;
         this.sessionReference = Model.sessionReference;
 
         // TODO: Write a test for scenario where you query with withId and there are no results.
-        this.fields = this.session.state[this.tableKey].rows[modelId] || {};
+        this.fields = this.Model.fields().castValuesAgainstDefinition(
+            this._getInstanceRowFromState() || {}
+        );
+    }
+
+    /**
+     * @param {Object} fields
+     */
+    update(fields) {
+        this.session.applyMutation({
+            fields,
+            type: "UPDATE",
+            ...this._getPropertiesForInstanceMutation(),
+        });
+    }
+
+    /**
+     */
+    delete() {
+        this.session.applyMutation({
+            type: "DELETE",
+            ...this._getPropertiesForInstanceMutation(),
+        });
+    }
+
+    /**
+     * @returns {Model|null}
+     */
+    _getInstanceRowFromState() {
+        return this.session.state[this.tableKey].rows[this.modelId] || null;
+    }
+
+    /**
+     * @returns {Object}
+     */
+    _getPropertiesForInstanceMutation() {
+        return {
+            Model: this.Model,
+            modelId: this.fields.id,
+        };
     }
 
     /**
@@ -41,33 +81,10 @@ class Model {
     }
 
     /**
-     * @param {Object} fields
+     * @param {Object} fieldsForMutation
      */
-    update(fields) {
-        this.session.applyMutation({
-            fields,
-            type: "UPDATE",
-            ...this.getPropertiesForInstanceMutation(),
-        });
-    }
-
-    /**
-     */
-    delete() {
-        this.session.applyMutation({
-            type: "DELETE",
-            ...this.getPropertiesForInstanceMutation(),
-        });
-    }
-
-    /**
-     * @returns {Object}
-     */
-    getPropertiesForInstanceMutation() {
-        return {
-            Model: this.Model,
-            modelId: this.fields.id,
-        };
+    static runMutationBouncer(fieldsForMutation) {
+        this.fields().runSchemaMutationBouncer(this, fieldsForMutation);
     }
 
     /**
