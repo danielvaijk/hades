@@ -1,5 +1,10 @@
 import { ValidationError } from "./errors";
 
+/**
+ * Field name constants.
+ */
+const FIELD_NAME_IDENTIFIER = "id";
+
 class Schema {
     /**
      * @param {Object} schemaDefinition
@@ -14,7 +19,7 @@ class Schema {
      * @returns {Object}
      */
     castValuesAgainstDefinition(fieldValues) {
-        if (fieldValues.id) {
+        if (fieldValues[FIELD_NAME_IDENTIFIER]) {
             // ID field is set.
         } else {
             this._createErrorFieldIdIsRequired();
@@ -41,7 +46,9 @@ class Schema {
 
         return fieldEntries.reduce(reduceSchemaDefinition, {
             // ID is omitted from schema definition (it's always included).
-            id: new Number(fieldValues.id),
+            [FIELD_NAME_IDENTIFIER]: new Number(
+                fieldValues[FIELD_NAME_IDENTIFIER]
+            ),
         });
     }
 
@@ -52,7 +59,7 @@ class Schema {
      * @throws {Error}
      */
     runSchemaMutationBouncer(Model, fields) {
-        const fieldWhitelist = ["id"];
+        const fieldWhitelist = [FIELD_NAME_IDENTIFIER];
 
         /**
          * @param {string} key

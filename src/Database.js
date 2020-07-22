@@ -1,6 +1,11 @@
 import { Table } from "./Table";
 import { Session } from "./Session";
 
+/**
+ * Type constants.
+ */
+const TYPE_FUNCTION = "function";
+
 class Database {
     /**
      * @param {Model[]} models
@@ -84,7 +89,7 @@ class Database {
      */
     _forModelsInSessionApplyReducers(session, action) {
         session.models.forEach((Model) => {
-            if (typeof Model.reducer === "function") {
+            if (typeof Model.reducer === TYPE_FUNCTION) {
                 Model.reducer.call(Model, action);
             } else {
                 // No reducer defined for this model.

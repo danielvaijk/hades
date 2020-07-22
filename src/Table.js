@@ -1,5 +1,16 @@
 import { ValidationError } from "./errors";
 
+/**
+ * Table constants.
+ */
+const TABLE_NAME_BASE = "table_";
+
+/**
+ * Symbol constants.
+ */
+const SYMBOL_DESCRIPTION_KEY = "key";
+const SYMBOL_DESCRIPTION_META = "meta";
+
 class Table {
     /**
      * @param {Model} Model
@@ -7,8 +18,8 @@ class Table {
     constructor(Model) {
         this.rows = this._createStorageForRows();
 
-        this.propertySymbolKey = Symbol("key");
-        this.propertySymbolMeta = Symbol("meta");
+        this.propertySymbolKey = Symbol(SYMBOL_DESCRIPTION_KEY);
+        this.propertySymbolMeta = Symbol(SYMBOL_DESCRIPTION_META);
 
         this[this.propertySymbolMeta] = this._createStorageForMeta();
         this[this.propertySymbolKey] = this._getModelTableName(Model);
@@ -101,7 +112,7 @@ class Table {
      * @returns {string}
      */
     _getModelTableName(Model) {
-        return `table_${Model.toString().toLowerCase()}`;
+        return `${TABLE_NAME_BASE}${Model.toString().toLowerCase()}`;
     }
 
     /**

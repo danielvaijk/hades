@@ -1,3 +1,4 @@
+import { MUTATION_TYPES } from "./constants";
 import { UnexpectedValueError } from "./errors";
 
 class Session {
@@ -37,19 +38,19 @@ class Session {
 
         // FIXME: Let's not pass fields in if it's undefined?
         switch (type) {
-            case "INSERT":
+            case MUTATION_TYPES.INSERT:
                 pointerModelTable.insertRow(fields);
                 break;
 
-            case "UPDATE":
+            case MUTATION_TYPES.UPDATE:
                 pointerModelTable.updateRow(modelId, fields);
                 break;
 
-            case "UPSERT":
+            case MUTATION_TYPES.UPSERT:
                 pointerModelTable.upsertRow(fields);
                 break;
 
-            case "DELETE":
+            case MUTATION_TYPES.DELETE:
                 pointerModelTable.deleteRow(modelId);
                 break;
 

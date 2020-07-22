@@ -1,4 +1,5 @@
 import { Session } from "./Session";
+import { MUTATION_TYPES } from "./constants";
 import { ImplementationError } from "./errors";
 
 // TODO: Add 'identifier' field type, so we know if there's a specific field value
@@ -28,7 +29,7 @@ class Model {
     update(fields) {
         this.session.applyMutation({
             fields,
-            type: "UPDATE",
+            type: MUTATION_TYPES.UPDATE,
             ...this._getPropertiesForInstanceMutation(),
         });
     }
@@ -37,7 +38,7 @@ class Model {
      */
     delete() {
         this.session.applyMutation({
-            type: "DELETE",
+            type: MUTATION_TYPES.DELETE,
             ...this._getPropertiesForInstanceMutation(),
         });
     }
@@ -94,7 +95,7 @@ class Model {
         this.session.applyMutation({
             fields,
             Model: this,
-            type: "INSERT",
+            type: MUTATION_TYPES.INSERT,
         });
     }
 
@@ -105,7 +106,7 @@ class Model {
         this.session.applyMutation({
             fields,
             Model: this,
-            type: "UPSERT",
+            type: MUTATION_TYPES.UPSERT,
         });
     }
 
