@@ -5,20 +5,13 @@ class Table {
      * @param {Model} Model
      */
     constructor(Model) {
-        this.rows = this.createStorageForRows();
+        this.rows = this._createStorageForRows();
 
         this.propertySymbolKey = Symbol("key");
         this.propertySymbolMeta = Symbol("meta");
 
-        this[this.propertySymbolMeta] = this.createStorageForMeta();
-        this[this.propertySymbolKey] = this.getModelTableName(Model);
-    }
-
-    /**
-     * @returns {Object}
-     */
-    getMeta() {
-        return this[this.propertySymbolMeta];
+        this[this.propertySymbolMeta] = this._createStorageForMeta();
+        this[this.propertySymbolKey] = this._getModelTableName(Model);
     }
 
     /**
@@ -29,52 +22,22 @@ class Table {
     }
 
     /**
-     * @returns {Object}
-     */
-    createStorageForRows() {
-        return {};
-    }
-
-    /**
-     * @returns {Object}
-     */
-    createStorageForMeta() {
-        return { lastId: 0 };
-    }
-
-    /**
-     * @returns {number}
-     */
-    getNextId() {
-        return this.getMeta().lastId + 1;
-    }
-
-    /**
-     * @param {Model} Model
-     *
-     * @returns {string}
-     */
-    getModelTableName(Model) {
-        return `table_${Model.toString().toLowerCase()}`;
-    }
-
-    /**
      * @param {Object} columns
      */
     insertRow(columns) {
         // FIXME: Using a random modelId is bad, since we'll end up colliding
         // with the meta lastId value at some point.
-        const modelId = columns.id || this.getNextId();
+        const modelId = columns.id || this._getNextId();
 
         if (this.rows[modelId]) {
-            this.createErrorNonUniqueRowIdForInsertion();
+            this._createErrorNonUniqueRowIdForInsertion();
         } else {
             this.rows[modelId] = {
                 ...columns,
                 id: modelId,
             };
 
-            this.getMeta().lastId++;
+            this._getMeta().lastId++;
         }
     }
 
@@ -105,9 +68,46 @@ class Table {
     }
 
     /**
+     * @returns {Object}
+     */
+    _getMeta() {
+        return this[this.propertySymbolMeta];
+    }
+
+    /**
+     * @returns {Object}
+     */
+    _createStorageForRows() {
+        return {};
+    }
+
+    /**
+     * @returns {Object}
+     */
+    _createStorageForMeta() {
+        return { lastId: 0 };
+    }
+
+    /**
+     * @returns {number}
+     */
+    _getNextId() {
+        return this._getMeta().lastId + 1;
+    }
+
+    /**
+     * @param {Model} Model
+     *
+     * @returns {string}
+     */
+    _getModelTableName(Model) {
+        return `table_${Model.toString().toLowerCase()}`;
+    }
+
+    /**
      * @throws {ValidationError}
      */
-    createErrorNonUniqueRowIdForInsertion() {
+    _createErrorNonUniqueRowIdForInsertion() {
         throw new ValidationError("Cannot insert new row with non-unique ID.");
     }
 }

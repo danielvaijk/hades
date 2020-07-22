@@ -6,22 +6,7 @@ class Database {
      * @param {Model[]} models
      */
     constructor(...models) {
-        this.registerModels(models);
-    }
-
-    /**
-     * @param {Model[]} models
-     */
-    registerModels(models) {
-        this.registeredModels = models.reduce((uniqueModels, Model) => {
-            if (uniqueModels.includes(Model)) {
-                this.createWarningDuplicateModel(Model.toString());
-            } else {
-                uniqueModels.push(Model);
-            }
-
-            return uniqueModels;
-        }, []);
+        this._registerModels(models);
     }
 
     /**
@@ -36,13 +21,28 @@ class Database {
          * @returns {Object}
          */
         return (state = {}, action) => {
-            const session = this.createSession(state);
+            const session = this._createSession(state);
 
-            this.forModelsInSessionCreateTablesIfNeeded(session);
-            this.forModelsInSessionApplyReducers(session, action);
+            this._forModelsInSessionCreateTablesIfNeeded(session);
+            this._forModelsInSessionApplyReducers(session, action);
 
             return session.state;
         };
+    }
+
+    /**
+     * @param {Model[]} models
+     */
+    _registerModels(models) {
+        this.registeredModels = models.reduce((uniqueModels, Model) => {
+            if (uniqueModels.includes(Model)) {
+                this._createWarningDuplicateModel(Model.toString());
+            } else {
+                uniqueModels.push(Model);
+            }
+
+            return uniqueModels;
+        }, []);
     }
 
     /**
@@ -50,7 +50,7 @@ class Database {
      *
      * @returns {Session}
      */
-    createSession(state) {
+    _createSession(state) {
         const session = new Session(state);
 
         session.addModels(this.registeredModels);
@@ -64,7 +64,7 @@ class Database {
     /**
      * @param {Object} session
      */
-    forModelsInSessionCreateTablesIfNeeded(session) {
+    _forModelsInSessionCreateTablesIfNeeded(session) {
         session.models.forEach((Model) => {
             if (session.state[Model.getTableKey()]) {
                 // Table already exists.
@@ -82,7 +82,7 @@ class Database {
      * @param {Object} session
      * @param {Object} action
      */
-    forModelsInSessionApplyReducers(session, action) {
+    _forModelsInSessionApplyReducers(session, action) {
         session.models.forEach((Model) => {
             if (typeof Model.reducer === "function") {
                 Model.reducer.call(Model, action);
@@ -95,7 +95,7 @@ class Database {
     /**
      * @param {string} modelName
      */
-    createWarningDuplicateModel(modelName) {
+    _createWarningDuplicateModel(modelName) {
         console.warn(`Tried to register duplicate Model: '${modelName}'.`);
     }
 }
