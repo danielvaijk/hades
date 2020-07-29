@@ -1,4 +1,4 @@
-import { ValidationError } from "./errors";
+import { ErrorValidation } from "./errors";
 
 /**
  * Field name constants.
@@ -35,16 +35,16 @@ class Schema {
         const fieldEntries = Object.entries(this.schemaDefinition);
 
         /**
-         * @param {Object} castDefinition
+         * @param {Object} fieldInstances
          * @param {[string, any]} currentField
          *
          * @returns {Object}
          */
         const reduceSchemaDefinition = (
-            castDefinition,
+            fieldInstances,
             [fieldName, FieldClass]
         ) => ({
-            ...castDefinition,
+            ...fieldInstances,
             [fieldName]: new FieldClass(fieldValues[fieldName]),
         });
 
@@ -62,7 +62,7 @@ class Schema {
      *
      * @throws {Error}
      */
-    runSchemaMutationBouncer(Model, fields) {
+    assertSchemaAllowsFieldsForMutation(Model, fields) {
         const fieldWhitelist = [FIELD_NAME_IDENTIFIER];
 
         /**
@@ -70,8 +70,8 @@ class Schema {
          */
         const isFieldSuperfluous = (key) => {
             return (
-                this.schemaDefinition[key] === undefined &&
-                !fieldWhitelist.includes(key)
+                !fieldWhitelist.includes(key) &&
+                this.schemaDefinition[key] === undefined
             );
         };
 
@@ -96,22 +96,22 @@ class Schema {
      * @param {string} modelName
      * @param {string} propertyNameSuperfluous
      *
-     * @throws {ValidationError}
+     * @throws {ErrorValidation}
      */
     _createErrorModelPropertySuperfluous(modelName, propertyNameSuperfluous) {
-        throw new ValidationError(
+        throw new ErrorValidation(
             [
-                `Cannot apply create mutation via ${modelName} model,`,
+                `Cannot apply mutation to ${modelName} model,`,
                 `found superfluous property '${propertyNameSuperfluous}'.`,
             ].join(" ")
         );
     }
 
     /**
-     * @throws {ValidationError}
+     * @throws {ErrorValidation}
      */
     _createErrorFieldIdIsRequired() {
-        throw new ValidationError(
+        throw new ErrorValidation(
             "ID is a required field for Model schema definition."
         );
     }

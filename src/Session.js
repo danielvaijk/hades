@@ -1,5 +1,5 @@
 import { MUTATION_TYPES } from "./constants";
-import { UnexpectedValueError } from "./errors";
+import { ErrorValueUnexpected } from "./errors";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
@@ -21,10 +21,10 @@ class Session {
     }
 
     /**
-     * @param {Object} state
+     * @param {Object} object
      */
-    mergeIntoState(state) {
-        Object.assign(this.state, state);
+    mergeIntoState(object) {
+        Object.assign(this.state, object);
     }
 
     /**
@@ -35,12 +35,11 @@ class Session {
         const pointerModelTable = this._getPointerForModelTable(Model);
 
         if (fields) {
-            Model.runMutationBouncer(fields);
+            Model.assertMutationFieldsAreAllowed(fields);
         } else {
             // No fields given.
         }
 
-        // FIXME: Let's not pass fields in if it's undefined?
         switch (type) {
             case MUTATION_TYPES.INSERT:
                 pointerModelTable.insertRow(fields);
@@ -69,16 +68,16 @@ class Session {
      * @returns {Table}
      */
     _getPointerForModelTable(Model) {
-        return this.state[Model.getTableKey()];
+        return this.state[Model.getTableKeyOrNull()];
     }
 
     /**
      * @param {string} mutationType
      *
-     * @throws {UnexpectedValueError}
+     * @throws {ErrorValueUnexpected}
      */
     _createErrorUnexpectedMutationType(mutationType) {
-        throw new UnexpectedValueError(
+        throw new ErrorValueUnexpected(
             `Unexpected mutation type: '${mutationType}'`
         );
     }

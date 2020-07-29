@@ -1,6 +1,6 @@
 import { Session } from "./Session";
 import { MUTATION_TYPES } from "./constants";
-import { ImplementationError } from "./errors";
+import { ErrorImplementation } from "./errors";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
@@ -19,7 +19,7 @@ class Model {
         this.sessionReference = Model.sessionReference;
 
         this.fields = this.Model.fields().castValuesAgainstDefinition(
-            this._getInstanceRowFromState() || {}
+            this._getInstanceRowFromStateOrNull() || {}
         );
     }
 
@@ -46,7 +46,7 @@ class Model {
     /**
      * @returns {Model|null}
      */
-    _getInstanceRowFromState() {
+    _getInstanceRowFromStateOrNull() {
         return this.session.state[this.tableKey].rows[this.modelId] || null;
     }
 
@@ -61,31 +61,34 @@ class Model {
     }
 
     /**
-     * @throws {ImplementationError}
+     * @throws {ErrorImplementation}
      */
     static toString() {
-        throw new ImplementationError("Model#toString must be implemented.");
+        throw new ErrorImplementation("Model#toString must be implemented.");
     }
 
     /**
-     * @throws {ImplementationError}
+     * @throws {ErrorImplementation}
      */
     static fields() {
-        throw new ImplementationError("Model#fields must be implemented.");
+        throw new ErrorImplementation("Model#fields must be implemented.");
     }
 
     /**
-     * @throws {ImplementationError}
+     * @throws {ErrorImplementation}
      */
     static reducer() {
-        throw new ImplementationError("Model#reducer must be implemented.");
+        throw new ErrorImplementation("Model#reducer must be implemented.");
     }
 
     /**
      * @param {Object} fieldsForMutation
      */
-    static runMutationBouncer(fieldsForMutation) {
-        this.fields().runSchemaMutationBouncer(this, fieldsForMutation);
+    static assertMutationFieldsAreAllowed(fieldsForMutation) {
+        this.fields().assertSchemaAllowsFieldsForMutation(
+            this,
+            fieldsForMutation
+        );
     }
 
     /**
@@ -122,7 +125,7 @@ class Model {
     /**
      * @returns {string|null}
      */
-    static getTableKey() {
+    static getTableKeyOrNull() {
         return this.tableKey || null;
     }
 

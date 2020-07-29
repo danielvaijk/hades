@@ -2,15 +2,15 @@
  * @author Daniel van Dijk <daniel@invidiacreative.net>
  * @since 22072020 Clean up.
  */
-class UnexpectedValueError extends Error {
+class ErrorImplementation extends Error {
     /**
      * @param {string} message
      */
     constructor(message) {
         super(message);
 
-        this.name = "HadesUnexpectedValueError";
+        this.name = "HadesErrorImplementation";
     }
 }
 
-export { UnexpectedValueError };
+export { ErrorImplementation };

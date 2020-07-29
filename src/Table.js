@@ -1,4 +1,4 @@
-import { ValidationError } from "./errors";
+import { ErrorValidation } from "./errors";
 
 /**
  * Table constants.
@@ -118,10 +118,10 @@ class Table {
     }
 
     /**
-     * @throws {ValidationError}
+     * @throws {ErrorValidation}
      */
     _createErrorNonUniqueRowIdForInsertion() {
-        throw new ValidationError("Cannot insert new row with non-unique ID.");
+        throw new ErrorValidation("Cannot insert new row with non-unique ID.");
     }
 }
 
