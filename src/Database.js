@@ -1,6 +1,15 @@
 import { Table } from "./Table";
 import { Session } from "./Session";
 
+/**
+ * Type constants.
+ */
+const TYPE_FUNCTION = "function";
+
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Database {
     /**
      * @param {Model[]} models
@@ -10,7 +19,6 @@ class Database {
     }
 
     /**
-     * TODO: Add try/catch, and throw all errors/warnings.
      * @returns {Function}
      */
     reducer() {
@@ -66,7 +74,7 @@ class Database {
      */
     _forModelsInSessionCreateTablesIfNeeded(session) {
         session.models.forEach((Model) => {
-            if (session.state[Model.getTableKey()]) {
+            if (session.state[Model.getTableKeyOrNull()]) {
                 // Table already exists.
             } else {
                 const table = new Table(Model);
@@ -84,7 +92,7 @@ class Database {
      */
     _forModelsInSessionApplyReducers(session, action) {
         session.models.forEach((Model) => {
-            if (typeof Model.reducer === "function") {
+            if (typeof Model.reducer === TYPE_FUNCTION) {
                 Model.reducer.call(Model, action);
             } else {
                 // No reducer defined for this model.

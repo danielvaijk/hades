@@ -1,5 +1,14 @@
-import { ValidationError } from "./errors";
+import { ErrorValidation } from "./errors";
 
+/**
+ * Field name constants.
+ */
+const FIELD_NAME_IDENTIFIER = "id";
+
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Schema {
     /**
      * @param {Object} schemaDefinition
@@ -14,7 +23,7 @@ class Schema {
      * @returns {Object}
      */
     castValuesAgainstDefinition(fieldValues) {
-        if (fieldValues.id) {
+        if (fieldValues[FIELD_NAME_IDENTIFIER]) {
             // ID field is set.
         } else {
             this._createErrorFieldIdIsRequired();
@@ -26,22 +35,24 @@ class Schema {
         const fieldEntries = Object.entries(this.schemaDefinition);
 
         /**
-         * @param {Object} castDefinition
+         * @param {Object} fieldInstances
          * @param {[string, any]} currentField
          *
          * @returns {Object}
          */
         const reduceSchemaDefinition = (
-            castDefinition,
+            fieldInstances,
             [fieldName, FieldClass]
         ) => ({
-            ...castDefinition,
+            ...fieldInstances,
             [fieldName]: new FieldClass(fieldValues[fieldName]),
         });
 
         return fieldEntries.reduce(reduceSchemaDefinition, {
             // ID is omitted from schema definition (it's always included).
-            id: new Number(fieldValues.id),
+            [FIELD_NAME_IDENTIFIER]: new Number(
+                fieldValues[FIELD_NAME_IDENTIFIER]
+            ),
         });
     }
 
@@ -51,16 +62,16 @@ class Schema {
      *
      * @throws {Error}
      */
-    runSchemaMutationBouncer(Model, fields) {
-        const fieldWhitelist = ["id"];
+    assertSchemaAllowsFieldsForMutation(Model, fields) {
+        const fieldWhitelist = [FIELD_NAME_IDENTIFIER];
 
         /**
          * @param {string} key
          */
         const isFieldSuperfluous = (key) => {
             return (
-                this.schemaDefinition[key] === undefined &&
-                !fieldWhitelist.includes(key)
+                !fieldWhitelist.includes(key) &&
+                this.schemaDefinition[key] === undefined
             );
         };
 
@@ -85,22 +96,22 @@ class Schema {
      * @param {string} modelName
      * @param {string} propertyNameSuperfluous
      *
-     * @throws {ValidationError}
+     * @throws {ErrorValidation}
      */
     _createErrorModelPropertySuperfluous(modelName, propertyNameSuperfluous) {
-        throw new ValidationError(
+        throw new ErrorValidation(
             [
-                `Cannot apply create mutation via ${modelName} model,`,
+                `Cannot apply mutation to ${modelName} model,`,
                 `found superfluous property '${propertyNameSuperfluous}'.`,
             ].join(" ")
         );
     }
 
     /**
-     * @throws {ValidationError}
+     * @throws {ErrorValidation}
      */
     _createErrorFieldIdIsRequired() {
-        throw new ValidationError(
+        throw new ErrorValidation(
             "ID is a required field for Model schema definition."
         );
     }

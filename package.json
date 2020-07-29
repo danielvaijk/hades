@@ -2,7 +2,29 @@
     "name": "hades",
     "private": true,
     "version": "0.1.0",
-    "description": "A relational database for Redux.",
+    "main": "index.js",
+    "license": "UNLICENSED",
+    "bugs": "https://github.com/danielvaijk/hades/issues",
+    "description": "Object-relational mapping for Redux.",
+    "keywords": [
+        "ORM",
+        "Redux",
+        "table",
+        "model",
+        "state",
+        "object",
+        "mapping",
+        "database",
+        "relational"
+    ],
+    "engines": {
+        "node": "10.16.2",
+        "yarn": "1.22.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/danielvaijk/hades.git"
+    },
     "author": {
         "name": "Daniel van Dijk",
         "email": "daniel@invidiacreative.net"

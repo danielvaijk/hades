@@ -1,5 +1,20 @@
-import { ValidationError } from "./errors";
+import { ErrorValidation } from "./errors";
 
+/**
+ * Table constants.
+ */
+const TABLE_NAME_BASE = "table_";
+
+/**
+ * Symbol constants.
+ */
+const SYMBOL_DESCRIPTION_KEY = "key";
+const SYMBOL_DESCRIPTION_META = "meta";
+
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Table {
     /**
      * @param {Model} Model
@@ -7,8 +22,8 @@ class Table {
     constructor(Model) {
         this.rows = this._createStorageForRows();
 
-        this.propertySymbolKey = Symbol("key");
-        this.propertySymbolMeta = Symbol("meta");
+        this.propertySymbolKey = Symbol(SYMBOL_DESCRIPTION_KEY);
+        this.propertySymbolMeta = Symbol(SYMBOL_DESCRIPTION_META);
 
         this[this.propertySymbolMeta] = this._createStorageForMeta();
         this[this.propertySymbolKey] = this._getModelTableName(Model);
@@ -25,8 +40,6 @@ class Table {
      * @param {Object} columns
      */
     insertRow(columns) {
-        // FIXME: Using a random modelId is bad, since we'll end up colliding
-        // with the meta lastId value at some point.
         const modelId = columns.id || this._getNextId();
 
         if (this.rows[modelId]) {
@@ -101,14 +114,14 @@ class Table {
      * @returns {string}
      */
     _getModelTableName(Model) {
-        return `table_${Model.toString().toLowerCase()}`;
+        return `${TABLE_NAME_BASE}${Model.toString().toLowerCase()}`;
     }
 
     /**
-     * @throws {ValidationError}
+     * @throws {ErrorValidation}
      */
     _createErrorNonUniqueRowIdForInsertion() {
-        throw new ValidationError("Cannot insert new row with non-unique ID.");
+        throw new ErrorValidation("Cannot insert new row with non-unique ID.");
     }
 }
 

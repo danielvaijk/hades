@@ -1,9 +1,11 @@
 import { Session } from "./Session";
-import { ImplementationError } from "./errors";
+import { MUTATION_TYPES } from "./constants";
+import { ErrorImplementation } from "./errors";
 
-// TODO: Add 'identifier' field type, so we know if there's a specific field value
-// that should be used as the identifier (like a uuid, instead of id).
-// TODO: Also, make sure there are no ID collisions (trying to create model with non-unique identifier).
+/**
+ * @author Daniel van Dijk <daniel@invidiacreative.net>
+ * @since 22072020 Clean up.
+ */
 class Model {
     /**
      * @param {Model} Model
@@ -16,9 +18,8 @@ class Model {
         this.tableKey = Model.tableKey;
         this.sessionReference = Model.sessionReference;
 
-        // TODO: Write a test for scenario where you query with withId and there are no results.
         this.fields = this.Model.fields().castValuesAgainstDefinition(
-            this._getInstanceRowFromState() || {}
+            this._getInstanceRowFromStateOrNull() || {}
         );
     }
 
@@ -28,7 +29,7 @@ class Model {
     update(fields) {
         this.session.applyMutation({
             fields,
-            type: "UPDATE",
+            type: MUTATION_TYPES.UPDATE,
             ...this._getPropertiesForInstanceMutation(),
         });
     }
@@ -37,7 +38,7 @@ class Model {
      */
     delete() {
         this.session.applyMutation({
-            type: "DELETE",
+            type: MUTATION_TYPES.DELETE,
             ...this._getPropertiesForInstanceMutation(),
         });
     }
@@ -45,7 +46,7 @@ class Model {
     /**
      * @returns {Model|null}
      */
-    _getInstanceRowFromState() {
+    _getInstanceRowFromStateOrNull() {
         return this.session.state[this.tableKey].rows[this.modelId] || null;
     }
 
@@ -60,31 +61,34 @@ class Model {
     }
 
     /**
-     * @throws {ImplementationError}
+     * @throws {ErrorImplementation}
      */
     static toString() {
-        throw new ImplementationError("Model#toString must be implemented.");
+        throw new ErrorImplementation("Model#toString must be implemented.");
     }
 
     /**
-     * @throws {ImplementationError}
+     * @throws {ErrorImplementation}
      */
     static fields() {
-        throw new ImplementationError("Model#fields must be implemented.");
+        throw new ErrorImplementation("Model#fields must be implemented.");
     }
 
     /**
-     * @throws {ImplementationError}
+     * @throws {ErrorImplementation}
      */
     static reducer() {
-        throw new ImplementationError("Model#reducer must be implemented.");
+        throw new ErrorImplementation("Model#reducer must be implemented.");
     }
 
     /**
      * @param {Object} fieldsForMutation
      */
-    static runMutationBouncer(fieldsForMutation) {
-        this.fields().runSchemaMutationBouncer(this, fieldsForMutation);
+    static assertMutationFieldsAreAllowed(fieldsForMutation) {
+        this.fields().assertSchemaAllowsFieldsForMutation(
+            this,
+            fieldsForMutation
+        );
     }
 
     /**
@@ -94,7 +98,7 @@ class Model {
         this.session.applyMutation({
             fields,
             Model: this,
-            type: "INSERT",
+            type: MUTATION_TYPES.INSERT,
         });
     }
 
@@ -105,7 +109,7 @@ class Model {
         this.session.applyMutation({
             fields,
             Model: this,
-            type: "UPSERT",
+            type: MUTATION_TYPES.UPSERT,
         });
     }
 
@@ -121,7 +125,7 @@ class Model {
     /**
      * @returns {string|null}
      */
-    static getTableKey() {
+    static getTableKeyOrNull() {
         return this.tableKey || null;
     }
 
