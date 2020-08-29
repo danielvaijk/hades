@@ -44,23 +44,6 @@ class Model {
     }
 
     /**
-     * @returns {Model|null}
-     */
-    _getInstanceRowFromStateOrNull() {
-        return this.session.state[this.tableKey].rows[this.modelId] || null;
-    }
-
-    /**
-     * @returns {Object}
-     */
-    _getPropertiesForInstanceMutation() {
-        return {
-            Model: this.Model,
-            modelId: this.fields.id,
-        };
-    }
-
-    /**
      * @throws {ErrorImplementation}
      */
     static toString() {
@@ -141,6 +124,23 @@ class Model {
      */
     static addSession(session) {
         this.session = session;
+    }
+
+    /**
+     * @returns {Model|null}
+     */
+    _getInstanceRowFromStateOrNull() {
+        return this.session.state[this.tableKey].rows[this.modelId] || null;
+    }
+
+    /**
+     * @returns {Object}
+     */
+    _getPropertiesForInstanceMutation() {
+        return {
+            Model: this.Model,
+            modelId: this.fields.id,
+        };
     }
 }
 

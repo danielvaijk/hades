@@ -40,17 +40,36 @@ class Table {
      * @param {Object} columns
      */
     insertRow(columns) {
-        const modelId = columns.id || this._getNextId();
+        const metadata = this._getMeta();
+        const hasOwnId = Boolean(columns.id);
+
+        /**
+         * @returns {number}
+         */
+        const determineModelId = () => {
+            if (hasOwnId) {
+                return columns.id;
+            } else {
+                return this._getNextId();
+            }
+        };
+
+        const modelId = determineModelId();
 
         if (this.rows[modelId]) {
-            this._createErrorNonUniqueRowIdForInsertion();
+            this._createErrorNonUniqueRowIdForInsertion(modelId);
         } else {
             this.rows[modelId] = {
                 ...columns,
                 id: modelId,
             };
 
-            this._getMeta().lastId++;
+            if (hasOwnId) {
+                metadata.idBlacklist.push(modelId);
+                metadata.idBlacklist.sort((a, b) => a - b);
+            } else {
+                metadata.lastIdIncremental = modelId;
+            }
         }
     }
 
@@ -74,9 +93,18 @@ class Table {
     }
 
     /**
-     * @param {string} rowId
+     * @param {Number} rowId
      */
     deleteRow(rowId) {
+        const { idBlacklist } = this._getMeta();
+        const rowIdBlacklistIndex = idBlacklist.indexOf(rowId.valueOf());
+
+        if (rowIdBlacklistIndex === -1) {
+            // No need to clear this ID from blacklist.
+        } else {
+            idBlacklist.splice(rowIdBlacklistIndex, 1);
+        }
+
         delete this.rows[rowId];
     }
 
@@ -98,14 +126,34 @@ class Table {
      * @returns {Object}
      */
     _createStorageForMeta() {
-        return { lastId: 0 };
+        return { lastIdIncremental: 0, idBlacklist: [] };
     }
 
     /**
      * @returns {number}
      */
     _getNextId() {
-        return this._getMeta().lastId + 1;
+        const { lastIdIncremental, idBlacklist } = this._getMeta();
+        const nextIdIncremental = lastIdIncremental + 1;
+
+        /**
+         * @param {number} id
+         *
+         * @returns {number}
+         */
+        const findNextNonBlacklistedId = (id) => {
+            const idBlacklistIndex = idBlacklist.indexOf(id);
+
+            if (idBlacklistIndex === -1) {
+                return id;
+            } else if (idBlacklistIndex === idBlacklist.length - 1) {
+                return id + 1;
+            } else {
+                return findNextNonBlacklistedId(id + 1);
+            }
+        };
+
+        return findNextNonBlacklistedId(nextIdIncremental);
     }
 
     /**
@@ -118,10 +166,14 @@ class Table {
     }
 
     /**
+     * @param {number} rowId
+     *
      * @throws {ErrorValidation}
      */
-    _createErrorNonUniqueRowIdForInsertion() {
-        throw new ErrorValidation("Cannot insert new row with non-unique ID.");
+    _createErrorNonUniqueRowIdForInsertion(rowId) {
+        throw new ErrorValidation(
+            `Cannot insert new row with non-unique ID '${rowId}'.`
+        );
     }
 }
 
