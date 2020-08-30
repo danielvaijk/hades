@@ -118,7 +118,7 @@
         "valid-typeof": [
             "error",
             {
-                "requireStringLiterals": true
+                "requireStringLiterals": false
             }
         ]
     },

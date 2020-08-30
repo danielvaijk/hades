@@ -10,7 +10,6 @@ const TABLE_NAME_BASE = "table_";
  */
 const SYMBOL_DESCRIPTION_KEY = "key";
 const SYMBOL_DESCRIPTION_META = "meta";
-const TEST = "asd";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
