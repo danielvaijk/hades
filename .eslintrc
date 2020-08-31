@@ -31,7 +31,6 @@
                 "usePrettierrc": true
             }
         ],
-
         /**
          * Rules for possible errors.
          */
@@ -119,6 +118,172 @@
             "error",
             {
                 "requireStringLiterals": false
+            }
+        ],
+        /**
+         * Rules for best practices.
+         */
+        "accessor-pairs": [
+            "error",
+            {
+                "setWithoutGet": false,
+                "getWithoutSet": false,
+                "enforceForClassMembers": true
+            }
+        ],
+        "array-callback-return": [
+            "error",
+            {
+                "allowImplicit": false,
+                "checkForEach": true
+            }
+        ],
+        "block-scoped-var": "error",
+        "class-methods-use-this": "off",
+        "complexity": ["warn", 10],
+        "consistent-return": [
+            "error",
+            {
+                "treatUndefinedAsUnspecified": true
+            }
+        ],
+        "curly": ["error", "all"],
+        "default-case": "error",
+        "default-case-last": "error",
+        "default-param-last": "error",
+        "dot-location": ["error", "property"],
+        "dot-notation": "error",
+        "eqeqeq": "error",
+        "grouped-accessor-pairs": ["error", "getBeforeSet"],
+        "guard-for-in": "error",
+        "max-classes-per-file": ["error", 1],
+        "no-alert": "error",
+        "no-caller": "error",
+        "no-case-declarations": "error",
+        "no-constructor-return": "error",
+        "no-div-regex": "error",
+        "no-else-return": "off",
+        "no-empty-function": "error",
+        "no-empty-pattern": "error",
+        "no-eq-null": "error",
+        "no-eval": "error",
+        "no-extend-native": "error",
+        "no-extra-bind": "error",
+        "no-extra-label": "error",
+        "no-fallthrough": "error",
+        "no-floating-decimal": "error",
+        "no-global-assign": "error",
+        "no-implicit-coercion": "error",
+        "no-implicit-globals": [
+            "error",
+            {
+                "lexicalBindings": true
+            }
+        ],
+        "no-implied-eval": "error",
+        "no-invalid-this": "error",
+        "no-iterator": "error",
+        "no-labels": [
+            "error",
+            {
+                "allowLoop": false,
+                "allowSwitch": false
+            }
+        ],
+        "no-lone-blocks": "error",
+        "no-loop-func": "error",
+        "no-magic-numbers": [
+            "error",
+            {
+                "ignore": [1],
+                "ignoreArrayIndexes": true,
+                "ignoreDefaultValues": false,
+                "enforceConst": true,
+                "detectObjects": true
+            }
+        ],
+        "no-multi-spaces": "error",
+        "no-multi-str": "error",
+        "no-new": "error",
+        "no-new-func": "error",
+        "no-new-wrappers": "off",
+        "no-octal": "error",
+        "no-octal-escape": "error",
+        "no-param-reassign": [
+            "error",
+            {
+                "props": false
+            }
+        ],
+        "no-proto": "error",
+        "no-redeclare": "error",
+        "no-restricted-properties": "off",
+        "no-return-assign": ["error", "always"],
+        "no-return-await": "warn",
+        "no-script-url": "error",
+        "no-self-assign": [
+            "error",
+            {
+                "props": true
+            }
+        ],
+        "no-self-compare": "error",
+        "no-sequences": "error",
+        "no-throw-literal": "error",
+        "no-unmodified-loop-condition": "error",
+        "no-unused-expressions": [
+            "error",
+            {
+                "allowShortCircuit": false,
+                "allowTernary": false,
+                "allowTaggedTemplates": false
+            }
+        ],
+        "no-unused-labels": "error",
+        "no-useless-call": "error",
+        "no-useless-catch": "error",
+        "no-useless-concat": "error",
+        "no-useless-escape": "error",
+        "no-useless-return": "error",
+        "no-void": [
+            "error",
+            {
+                "allowAsStatement": false
+            }
+        ],
+        "no-warning-comments": [
+            "warn",
+            {
+                "terms": ["todo", "fixme"],
+                "location": "start"
+            }
+        ],
+        "no-with": "error",
+        "prefer-named-capture-group": "error",
+        "prefer-promise-reject-errors": [
+            "error",
+            {
+                "allowEmptyReject": false
+            }
+        ],
+        "prefer-regex-literals": "error",
+        "radix": ["error", "always"],
+        "require-await": "error",
+        "require-unicode-regexp": "error",
+        "vars-on-top": "error",
+        "wrap-iife": [
+            "error",
+            "inside",
+            {
+                "functionPrototypeMethods": false
+            }
+        ],
+        "yoda": [
+            "error",
+            "never",
+            {
+                "exceptRange": false,
+                "onlyEquality": false
             }
         ]
     },
