@@ -3,7 +3,7 @@ import { ErrorValueUnexpected } from "./errors";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
- * @since 22072020 Clean up.
+ * @since 20200718 Initial creation.
  */
 class Session {
     /**
@@ -58,7 +58,7 @@ class Session {
                 break;
 
             default:
-                this._createErrorUnexpectedMutationType();
+                this._createErrorUnexpectedMutationType(type);
         }
     }
 

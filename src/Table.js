@@ -3,7 +3,7 @@ import { ErrorValidation } from "./errors";
 /**
  * Table constants.
  */
-const TABLE_NAME_BASE = "table_";
+const TABLE_NAME_PREFIX = "table_";
 
 /**
  * Symbol constants.
@@ -176,7 +176,7 @@ class Table {
      * @returns {string}
      */
     _getModelTableName(Model) {
-        return `${TABLE_NAME_BASE}${Model.toString().toLowerCase()}`;
+        return `${TABLE_NAME_PREFIX}${Model.toString().toLowerCase()}`;
     }
 
     /**
