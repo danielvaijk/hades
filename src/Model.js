@@ -1,4 +1,3 @@
-import { Session } from "./Session";
 import { MUTATION_TYPES } from "./constants";
 import { ErrorImplementation } from "./errors";
 

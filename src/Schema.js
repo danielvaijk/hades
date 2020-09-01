@@ -7,7 +7,7 @@ const FIELD_NAME_IDENTIFIER = "id";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
- * @since 22072020 Clean up.
+ * @since 20200722 Initial creation.
  */
 class Schema {
     /**
@@ -70,7 +70,7 @@ class Schema {
          */
         const isFieldSuperfluous = (key) => {
             return (
-                !fieldWhitelist.includes(key) &&
+                fieldWhitelist.includes(key) === false &&
                 this.schemaDefinition[key] === undefined
             );
         };

@@ -1,0 +1,445 @@
+/**
+ * Notes about this configuration.
+ *
+ * 1. Don't add any formatting-related rules, as those are cleared via
+ *    eslint-config-prettier, anyway.
+ */
+{
+    "parser": "babel-eslint",
+    "parserOptions": {
+        // Since we use ECMAScript modules, which always have strict mode semantics,
+        // the "strict" directive is unnecessary.
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "globalReturn": false,
+            "impliedStrict": true,
+            "jsx": false
+        }
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:import/errors",
+        "plugin:import/warnings",
+        // Must be the last plugin in the extension array.
+        // Will disable all formatting-related ESLint rules.
+        "plugin:prettier/recommended"
+    ],
+    "rules": {
+        "semi": "error",
+        "prettier/prettier": [
+            "error",
+            {},
+            {
+                "usePrettierrc": true
+            }
+        ],
+        /**
+         * Rules for possible errors.
+         */
+        "for-direction": "error",
+        "getter-return": [
+            "error",
+            {
+                "allowImplicit": false
+            }
+        ],
+        "no-async-promise-executor": "error",
+        "no-await-in-loop": "warn",
+        "no-compare-neg-zero": "error",
+        "no-cond-assign": ["error", "always"],
+        "no-console": [
+            "error",
+            {
+                "allow": ["warn"]
+            }
+        ],
+        "no-constant-condition": [
+            "error",
+            {
+                "checkLoops": true
+            }
+        ],
+        "no-control-regex": "error",
+        "no-debugger": "error",
+        "no-dupe-args": "error",
+        "no-dupe-else-if": "error",
+        "no-dupe-keys": "error",
+        "no-duplicate-case": "error",
+        "no-empty": [
+            "error",
+            {
+                "allowEmptyCatch": false
+            }
+        ],
+        "no-empty-character-class": "error",
+        "no-ex-assign": "error",
+        "no-extra-boolean-cast": [
+            "error",
+            {
+                "enforceForLogicalOperands": true
+            }
+        ],
+        "no-extra-parens": ["error", "all"],
+        "no-extra-semi": "error",
+        "no-func-assign": "error",
+        "no-import-assign": "error",
+        "no-inner-declarations": ["error", "both"],
+        "no-invalid-regexp": "error",
+        "no-irregular-whitespace": [
+            "error",
+            {
+                "skipStrings": false,
+                "skipComments": false,
+                "skipRegExps": false,
+                "skipTemplates": false
+            }
+        ],
+        "no-loss-of-precision": "error",
+        "no-misleading-character-class": "error",
+        "no-obj-calls": "error",
+        "no-promise-executor-return": "error",
+        "no-prototype-builtins": "error",
+        "no-regex-spaces": "error",
+        "no-setter-return": "error",
+        "no-sparse-arrays": "error",
+        "no-template-curly-in-string": "error",
+        "no-unexpected-multiline": "error",
+        "no-unreachable": "error",
+        "no-unreachable-loop": "error",
+        "no-unsafe-finally": "error",
+        "no-unsafe-negation": [
+            "error",
+            {
+                "enforceForOrderingRelations": true
+            }
+        ],
+        "no-useless-backreference": "error",
+        "require-atomic-updates": "error",
+        "use-isnan": "error",
+        "valid-typeof": [
+            "error",
+            {
+                "requireStringLiterals": false
+            }
+        ],
+        /**
+         * Rules for best practices.
+         */
+        "accessor-pairs": [
+            "error",
+            {
+                "setWithoutGet": false,
+                "getWithoutSet": false,
+                "enforceForClassMembers": true
+            }
+        ],
+        "array-callback-return": [
+            "error",
+            {
+                "allowImplicit": false,
+                "checkForEach": true
+            }
+        ],
+        "block-scoped-var": "error",
+        "class-methods-use-this": "off",
+        "complexity": ["warn", 10],
+        "consistent-return": [
+            "error",
+            {
+                "treatUndefinedAsUnspecified": true
+            }
+        ],
+        "curly": ["error", "all"],
+        "default-case": "error",
+        "default-case-last": "error",
+        "default-param-last": "error",
+        "dot-location": ["error", "property"],
+        "dot-notation": "error",
+        "eqeqeq": "error",
+        "grouped-accessor-pairs": ["error", "getBeforeSet"],
+        "guard-for-in": "error",
+        "max-classes-per-file": ["error", 1],
+        "no-alert": "error",
+        "no-caller": "error",
+        "no-case-declarations": "error",
+        "no-constructor-return": "error",
+        "no-div-regex": "error",
+        "no-else-return": "off",
+        "no-empty-function": "error",
+        "no-empty-pattern": "error",
+        "no-eq-null": "error",
+        "no-eval": "error",
+        "no-extend-native": "error",
+        "no-extra-bind": "error",
+        "no-extra-label": "error",
+        "no-fallthrough": "error",
+        "no-floating-decimal": "error",
+        "no-global-assign": "error",
+        "no-implicit-coercion": "error",
+        "no-implicit-globals": [
+            "error",
+            {
+                "lexicalBindings": true
+            }
+        ],
+        "no-implied-eval": "error",
+        "no-invalid-this": "error",
+        "no-iterator": "error",
+        "no-labels": [
+            "error",
+            {
+                "allowLoop": false,
+                "allowSwitch": false
+            }
+        ],
+        "no-lone-blocks": "error",
+        "no-loop-func": "error",
+        "no-magic-numbers": [
+            "error",
+            {
+                "ignore": [1],
+                "ignoreArrayIndexes": true,
+                "ignoreDefaultValues": false,
+                "enforceConst": true,
+                "detectObjects": true
+            }
+        ],
+        "no-multi-spaces": "error",
+        "no-multi-str": "error",
+        "no-new": "error",
+        "no-new-func": "error",
+        // TODO: DOUBLE CHECK
+        "no-new-wrappers": "off",
+        "no-octal": "error",
+        "no-octal-escape": "error",
+        "no-param-reassign": [
+            "error",
+            {
+                "props": false
+            }
+        ],
+        "no-proto": "error",
+        "no-redeclare": "error",
+        "no-restricted-properties": "off",
+        "no-return-assign": ["error", "always"],
+        "no-return-await": "warn",
+        "no-script-url": "error",
+        "no-self-assign": [
+            "error",
+            {
+                "props": true
+            }
+        ],
+        "no-self-compare": "error",
+        "no-sequences": "error",
+        "no-throw-literal": "error",
+        "no-unmodified-loop-condition": "error",
+        "no-unused-expressions": [
+            "error",
+            {
+                "allowShortCircuit": false,
+                "allowTernary": false,
+                "allowTaggedTemplates": false
+            }
+        ],
+        "no-unused-labels": "error",
+        "no-useless-call": "error",
+        "no-useless-catch": "error",
+        "no-useless-concat": "error",
+        "no-useless-escape": "error",
+        "no-useless-return": "error",
+        "no-void": [
+            "error",
+            {
+                "allowAsStatement": false
+            }
+        ],
+        "no-warning-comments": [
+            "warn",
+            {
+                "terms": ["todo", "fixme"],
+                "location": "start"
+            }
+        ],
+        "no-with": "error",
+        "prefer-named-capture-group": "error",
+        "prefer-promise-reject-errors": [
+            "error",
+            {
+                "allowEmptyReject": false
+            }
+        ],
+        "prefer-regex-literals": "error",
+        "radix": ["error", "always"],
+        "require-await": "error",
+        "require-unicode-regexp": "error",
+        "vars-on-top": "error",
+        "wrap-iife": [
+            "error",
+            "inside",
+            {
+                "functionPrototypeMethods": false
+            }
+        ],
+        "yoda": [
+            "error",
+            "never",
+            {
+                "exceptRange": false,
+                "onlyEquality": false
+            }
+        ],
+        /**
+         * Rules for variable declarations.
+         */
+        "init-declarations": [
+            "error",
+            "always",
+            {
+                "ignoreForLoopInit": false
+            }
+        ],
+        "no-delete-var": "error",
+        "no-label-var": "error",
+        "no-restricted-globals": "off",
+        "no-shadow": [
+            "error",
+            {
+                "builtinGlobals": true,
+                "hoist": "all",
+                "allow": []
+            }
+        ],
+        "no-shadow-restricted-names": "error",
+        "no-undef": [
+            "error",
+            {
+                "typeof": true
+            }
+        ],
+        "no-undef-init": "error",
+        "no-undefined": "error",
+        "no-unused-vars": [
+            "error",
+            {
+                "vars": "all",
+                "varsIgnorePattern": "",
+                "args": "all",
+                "argsIgnorePattern": "",
+                "caughtErrors": "all",
+                "caughtErrorsIgnorePattern": "",
+                "ignoreRestSiblings": false
+            }
+        ],
+        "no-use-before-define": [
+            "error",
+            {
+                "functions": true,
+                "classes": true,
+                "variables": true
+            }
+        ],
+        /**
+         * Rules for ECMAScript 6.
+         */
+        "arrow-body-style": ["error", "never"],
+        "arrow-parens": ["error", "always"],
+        "arrow-spacing": [
+            "error",
+            {
+                "before": true,
+                "after": true
+            }
+        ],
+        "constructor-super": "error",
+        "generator-star-spacing": [
+            "error",
+            {
+                "before": false,
+                "after": true
+            }
+        ],
+        "no-class-assign": "error",
+        "no-confusing-arrow": [
+            "error",
+            {
+                "allowParens": false
+            }
+        ],
+        "no-const-assign": "error",
+        "no-dupe-class-members": "error",
+        "no-duplicate-imports": [
+            "error",
+            {
+                "includeExports": true
+            }
+        ],
+        "no-new-symbol": "error",
+        "no-restricted-exports": "off",
+        "no-restricted-imports": "off",
+        "no-this-before-super": "error",
+        "no-useless-computed-key": [
+            "error",
+            {
+                "enforceForClassMembers": true
+            }
+        ],
+        "no-useless-constructor": "error",
+        "no-useless-rename": [
+            "error",
+            {
+                "ignoreImport": false,
+                "ignoreExport": false,
+                "ignoreDestructuring": false
+            }
+        ],
+        "no-var": "error",
+        "object-shorthand": [
+            "error",
+            "always",
+            {
+                "avoidQuotes": true,
+                "ignoreConstructors": false,
+                "avoidExplicitReturnArrows": true
+            }
+        ],
+        "prefer-arrow-callback": [
+            "error",
+            {
+                "allowNamedFunctions": false,
+                "allowUnboundThis": false
+            }
+        ],
+        "prefer-const": [
+            "error",
+            {
+                "destructuring": "any",
+                "ignoreReadBeforeAssign": false
+            }
+        ],
+        "prefer-destructuring": "off",
+        "prefer-numeric-literals": "error",
+        "prefer-rest-params": "error",
+        "prefer-spread": "error",
+        "prefer-template": "error",
+        "require-yield": "error",
+        "rest-spread-spacing": ["error", "never"],
+        "sort-imports": "off",
+        "symbol-description": "error",
+        "template-curly-spacing": ["error", "never"],
+        "yield-star-spacing": [
+            "error",
+            {
+                "before": false,
+                "after": true
+            }
+        ]
+    },
+    "plugins": ["import", "prettier"],
+    "env": {
+        // This also automatically sets parserOptions.ecmaVersion to '11'.
+        "es2020": true,
+        "browser": true
+    },
+    "reportUnusedDisableDirectives": true
+}
