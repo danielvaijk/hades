@@ -120,6 +120,12 @@ class Table {
     }
 
     /**
+     */
+    truncate() {
+        this.rows = this._createStorageForRows();
+    }
+
+    /**
      * @returns {Object}
      */
     _getMeta() {

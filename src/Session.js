@@ -31,7 +31,13 @@ class Session {
      * @param {Object} options
      */
     applyMutation(options) {
-        const { type, Model, fields, modelId } = options;
+        const {
+            type,
+            Model,
+            fields,
+            modelId,
+            willApplyToEntireTable,
+        } = options;
         const pointerModelTable = this._getPointerForModelTable(Model);
 
         if (fields) {
@@ -54,7 +60,11 @@ class Session {
                 break;
 
             case MUTATION_TYPES.DELETE:
-                pointerModelTable.deleteRow(modelId);
+                if (willApplyToEntireTable) {
+                    pointerModelTable.truncate();
+                } else {
+                    pointerModelTable.deleteRow(modelId);
+                }
                 break;
 
             default:
