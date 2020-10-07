@@ -1,9 +1,9 @@
 {
     "name": "hades",
-    "private": true,
+    "private": false,
     "version": "0.1.0",
     "main": "index.js",
-    "license": "UNLICENSED",
+    "license": "MIT",
     "bugs": "https://github.com/danielvaijk/hades/issues",
     "description": "Object-relational mapping for Redux.",
     "keywords": [
@@ -17,10 +17,6 @@
         "database",
         "relational"
     ],
-    "engines": {
-        "node": "10.16.2",
-        "yarn": "1.22.0"
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/danielvaijk/hades.git"
