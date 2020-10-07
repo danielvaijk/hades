@@ -48,6 +48,13 @@ class Table {
     }
 
     /**
+     * @returns {Object}
+     */
+    getRows() {
+        return JSON.parse(JSON.stringify(this.rows));
+    }
+
+    /**
      * @param {Object} columns
      */
     insertRow(columns) {
