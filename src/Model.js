@@ -7,12 +7,12 @@ import { ErrorImplementation } from "./errors";
  */
 class Model {
     /**
-     * @param {Model} Model
+     * @param {Model} ModelClass
      * @param {string} modelId
      */
-    constructor(Model, modelId) {
-        this.Model = Model;
+    constructor(ModelClass, modelId) {
         this.modelId = modelId;
+        this.Model = ModelClass;
         this.session = Model.session;
         this.tableKey = Model.tableKey;
         this.sessionReference = Model.sessionReference;
@@ -92,6 +92,16 @@ class Model {
             fields,
             Model: this,
             type: MUTATION_TYPES.UPSERT,
+        });
+    }
+
+    /**
+     */
+    static deleteAll() {
+        this.session.applyMutation({
+            Model: this,
+            type: MUTATION_TYPES.DELETE,
+            willApplyToEntireTable: true,
         });
     }
 

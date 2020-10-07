@@ -294,7 +294,7 @@
          */
         "init-declarations": [
             "error",
-            "always",
+            "never",
             {
                 "ignoreForLoopInit": false
             }
@@ -342,7 +342,7 @@
         /**
          * Rules for ECMAScript 6.
          */
-        "arrow-body-style": ["error", "never"],
+        "arrow-body-style": "off",
         "arrow-parens": ["error", "always"],
         "arrow-spacing": [
             "error",
