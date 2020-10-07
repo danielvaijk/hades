@@ -6,8 +6,9 @@ import type { TableRowType } from "../Table";
 type MutationOptionsType = {|
     type: EnumEntry,
     modelId?: number,
-    ModelClass: Class<Model>,
     fields?: TableRowType,
+    ModelClass: Class<Model>,
+    willApplyToEntireTable?: boolean,
 |};
 
 /**
@@ -18,6 +19,7 @@ class Mutation {
     _type: EnumEntry;
     _ModelClass: Class<Model>;
     _modelIdOrNull: number | null;
+    _willApplyToEntireTable: boolean;
     _fieldsOrNull: TableRowType | null;
 
     /**
@@ -28,6 +30,7 @@ class Mutation {
         this._ModelClass = options.ModelClass;
         this._fieldsOrNull = options.fields || null;
         this._modelIdOrNull = options.modelId || null;
+        this._willApplyToEntireTable = options.willApplyToEntireTable || false;
     }
 
     /**
@@ -38,10 +41,10 @@ class Mutation {
     }
 
     /**
-     * @returns {FieldsForMutation|null}
+     * @returns {Class<Model>}
      */
-    getFieldsOrNull(): TableRowType | null {
-        return this._fieldsOrNull;
+    getModelClass(): Class<Model> {
+        return this._ModelClass;
     }
 
     /**
@@ -52,10 +55,17 @@ class Mutation {
     }
 
     /**
-     * @returns {Class<Model>}
+     * @returns {boolean}
      */
-    getModelClass(): Class<Model> {
-        return this._ModelClass;
+    getWillApplyToEntireTable(): boolean {
+        return this._willApplyToEntireTable;
+    }
+
+    /**
+     * @returns {FieldsForMutation|null}
+     */
+    getFieldsOrNull(): TableRowType | null {
+        return this._fieldsOrNull;
     }
 }
 
