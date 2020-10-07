@@ -1,9 +1,9 @@
 {
-    "name": "hades",
-    "private": true,
-    "version": "0.1.0",
+    "name": "@invidiacreative/hades",
+    "private": false,
+    "version": "0.1.1-alpha.1.2",
     "main": "index.js",
-    "license": "UNLICENSED",
+    "license": "MIT",
     "bugs": "https://github.com/danielvaijk/hades/issues",
     "description": "Object-relational mapping for Redux.",
     "keywords": [
@@ -17,10 +17,6 @@
         "database",
         "relational"
     ],
-    "engines": {
-        "node": "10.16.2",
-        "yarn": "1.22.0"
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/danielvaijk/hades.git"
@@ -30,18 +26,18 @@
         "email": "daniel@invidiacreative.net"
     },
     "devDependencies": {
-        "@babel/cli": "^7.11.5",
-        "@babel/core": "^7.11.5",
-        "@babel/preset-flow": "^7.10.4",
-        "babel-eslint": "^10.1.0",
-        "eslint": "^7.7.0",
-        "eslint-config-prettier": "^6.11.0",
+        "@babel/cli": "7.11.5",
+        "@babel/core": "7.11.5",
+        "@babel/preset-flow": "7.10.4",
+        "flow-bin": "0.132.0",
+        "babel-eslint": "10.1.0",
+        "eslint": "7.10.0",
+        "eslint-config-prettier": "6.11.0",
         "eslint-plugin-flowtype": "^5.2.0",
-        "eslint-plugin-import": "^2.21.2",
-        "eslint-plugin-prettier": "^3.1.4",
-        "flow-bin": "^0.132.0",
-        "husky": "^4.2.5",
-        "lint-staged": "^10.2.13",
-        "prettier": "^2.1.1"
+        "eslint-plugin-import": "2.21.2",
+        "eslint-plugin-prettier": "3.1.4",
+        "husky": "4.2.5",
+        "lint-staged": "10.2.13",
+        "prettier": "2.1.1"
     }
 }

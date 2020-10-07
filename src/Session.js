@@ -57,6 +57,7 @@ class Session {
 
         const modelIdOrNull: number | null = mutation.getModelIdOrNull();
         const fieldsOrNull: TableRowType | null = mutation.getFieldsOrNull();
+        const willApplyToEntireTable: boolean = mutation.getWillApplyToEntireTable();
 
         if (fieldsOrNull) {
             ModelClass.fields().assertSchemaAllowsFieldsForMutation(
@@ -72,7 +73,11 @@ class Session {
         } else if (type.equals(MutationTypeEnum.UPSERT())) {
             this._applyUpsertMutation(pointerModelTableOrNull, fieldsOrNull);
         } else if (type.equals(MutationTypeEnum.DELETE())) {
-            this._applyDeleteMutation(pointerModelTableOrNull, modelIdOrNull);
+            this._applyDeleteMutation(
+                pointerModelTableOrNull,
+                modelIdOrNull,
+                willApplyToEntireTable
+            );
         } else if (type.equals(MutationTypeEnum.UPDATE())) {
             this._applyUpdateMutation(
                 pointerModelTableOrNull,
@@ -104,14 +109,18 @@ class Session {
     /**
      * @param {Table} pointerTable
      * @param {number|null} modelIdOrNull
+     * @param {boolean} willApplyToEntireTable
      *
      * @throws {HadesUnexpectedValueError}
      */
     _applyDeleteMutation(
         pointerTable: Table,
-        modelIdOrNull: number | null
+        modelIdOrNull: number | null,
+        willApplyToEntireTable: boolean
     ): void {
-        if (modelIdOrNull) {
+        if (willApplyToEntireTable) {
+            pointerTable.truncate();
+        } else if (modelIdOrNull) {
             pointerTable.deleteRow(modelIdOrNull);
         } else {
             throw new HadesUnexpectedValueError(

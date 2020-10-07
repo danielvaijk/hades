@@ -58,6 +58,13 @@ class Table {
     }
 
     /**
+     * @returns {RowStorageType}
+     */
+    getRows(): RowStorageType {
+        return JSON.parse(JSON.stringify(this.rows));
+    }
+
+    /**
      * @param {TableRowType} columns
      */
     insertRow(columns: TableRowType): void {
@@ -130,6 +137,12 @@ class Table {
         }
 
         delete this.rows[rowId.toString()];
+    }
+
+    /**
+     */
+    truncate(): void {
+        this.rows = this._createStorageForRows();
     }
 
     /**

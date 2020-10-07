@@ -91,7 +91,19 @@ class Model {
     }
 
     /**
-     * @param {number} modelId
+     */
+    static deleteAll(): void {
+        this.session.applyMutation(
+            new Mutation({
+                ModelClass: this,
+                willApplyToEntireTable: true,
+                type: MutationTypeEnum.DELETE(),
+            })
+        );
+    }
+
+    /**
+     * @param {string} modelId
      *
      * @returns {Model}
      */

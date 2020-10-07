@@ -291,7 +291,13 @@
         /**
          * Rules for variable declarations.
          */
-        "init-declarations": ["error", "always"],
+        "init-declarations": [
+            "error",
+            "never",
+            {
+                "ignoreForLoopInit": false
+            }
+        ],
         "no-delete-var": "error",
         "no-label-var": "error",
         "no-restricted-globals": "off",
@@ -335,7 +341,7 @@
         /**
          * Rules for ECMAScript 6.
          */
-        "arrow-body-style": ["error", "as-needed"],
+        "arrow-body-style": "off",
         "arrow-parens": ["error", "always"],
         "arrow-spacing": [
             "error",
