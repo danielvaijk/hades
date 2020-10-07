@@ -1,7 +1,7 @@
 {
     "name": "hades",
     "private": false,
-    "version": "0.1.0",
+    "version": "0.1.1-alpha.1.0",
     "main": "index.js",
     "license": "MIT",
     "bugs": "https://github.com/danielvaijk/hades/issues",
