@@ -1,145 +1,130 @@
-import { MUTATION_TYPES } from "./constants";
-import { ErrorImplementation } from "./errors";
+// @flow strict
+import { Session } from "./Session";
+import { Mutation } from "./objects";
+import type { TableRowType } from "./Table";
+import type { ActionType } from "./Database";
+import { MutationTypeEnum } from "./objects/enums";
+import type { Schema, ModelFieldsType } from "./Schema";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
- * @since 22072020 Clean up.
+ * @since 20200718 Initial creation.
  */
 class Model {
+    modelId: number;
+    session: Session;
+    tableKey: string;
+    fields: ModelFieldsType;
+    ModelClass: Class<Model>;
+
+    static session: Session;
+    static tableKey: string;
+
+    static fields: () => Schema;
+    static toString: () => string;
+    static reducer: (action: ActionType) => void;
+
     /**
-     * @param {Model} Model
-     * @param {string} modelId
+     * @param {Class<Model>} ModelClass
+     * @param {number} modelId
      */
-    constructor(Model, modelId) {
-        this.Model = Model;
+    constructor(ModelClass: Class<Model>, modelId: number): void {
         this.modelId = modelId;
-        this.session = Model.session;
-        this.tableKey = Model.tableKey;
-        this.sessionReference = Model.sessionReference;
-
-        this.fields = this.Model.fields().castValuesAgainstDefinition(
-            this._getInstanceRowFromStateOrNull() || {}
+        this.ModelClass = ModelClass;
+        this.session = this.ModelClass.session;
+        this.tableKey = this.ModelClass.tableKey;
+        this.fields = this.ModelClass.fields().castValuesAgainstDefinition(
+            this._getInstanceRowFromStateOrEmpty()
         );
     }
 
     /**
-     * @param {Object} fields
+     * @param {TableRowType} fields
      */
-    update(fields) {
-        this.session.applyMutation({
-            fields,
-            type: MUTATION_TYPES.UPDATE,
-            ...this._getPropertiesForInstanceMutation(),
-        });
-    }
-
-    /**
-     */
-    delete() {
-        this.session.applyMutation({
-            type: MUTATION_TYPES.DELETE,
-            ...this._getPropertiesForInstanceMutation(),
-        });
-    }
-
-    /**
-     * @throws {ErrorImplementation}
-     */
-    static toString() {
-        throw new ErrorImplementation("Model#toString must be implemented.");
-    }
-
-    /**
-     * @throws {ErrorImplementation}
-     */
-    static fields() {
-        throw new ErrorImplementation("Model#fields must be implemented.");
-    }
-
-    /**
-     * @throws {ErrorImplementation}
-     */
-    static reducer() {
-        throw new ErrorImplementation("Model#reducer must be implemented.");
-    }
-
-    /**
-     * @param {Object} fieldsForMutation
-     */
-    static assertMutationFieldsAreAllowed(fieldsForMutation) {
-        this.fields().assertSchemaAllowsFieldsForMutation(
-            this,
-            fieldsForMutation
+    update(fields: TableRowType): void {
+        this.session.applyMutation(
+            new Mutation({
+                fields,
+                modelId: this.fields.id,
+                ModelClass: this.ModelClass,
+                type: MutationTypeEnum.UPDATE(),
+            })
         );
     }
 
     /**
-     * @param {Object} fields
      */
-    static create(fields) {
-        this.session.applyMutation({
-            fields,
-            Model: this,
-            type: MUTATION_TYPES.INSERT,
-        });
+    delete(): void {
+        this.session.applyMutation(
+            new Mutation({
+                modelId: this.fields.id,
+                ModelClass: this.ModelClass,
+                type: MutationTypeEnum.DELETE(),
+            })
+        );
     }
 
     /**
-     * @param {Object} fields
+     * @param {TableRowType} fields
      */
-    static upsert(fields) {
-        this.session.applyMutation({
-            fields,
-            Model: this,
-            type: MUTATION_TYPES.UPSERT,
-        });
+    static create(fields: TableRowType): void {
+        this.session.applyMutation(
+            new Mutation({
+                fields,
+                ModelClass: this,
+                type: MutationTypeEnum.INSERT(),
+            })
+        );
     }
 
     /**
-     * @param {string} modelId
+     * @param {TableRowType} fields
+     */
+    static upsert(fields: TableRowType): void {
+        this.session.applyMutation(
+            new Mutation({
+                fields,
+                ModelClass: this,
+                type: MutationTypeEnum.UPSERT(),
+            })
+        );
+    }
+
+    /**
+     * @param {number} modelId
      *
      * @returns {Model}
      */
-    static withId(modelId) {
+    static withId(modelId: number): Model {
         return new Model(this, modelId);
     }
 
     /**
      * @returns {string|null}
      */
-    static getTableKeyOrNull() {
+    static getTableKeyOrNull(): string | null {
         return this.tableKey || null;
     }
 
     /**
      * @param {string} tableKey
      */
-    static addTableKey(tableKey) {
+    static addTableKey(tableKey: string): void {
         this.tableKey = tableKey;
     }
 
     /**
      * @param {Session} session
      */
-    static addSession(session) {
+    static addSession(session: Session): void {
         this.session = session;
     }
 
     /**
-     * @returns {Model|null}
+     * @returns {Model|TableRowType}
      */
-    _getInstanceRowFromStateOrNull() {
-        return this.session.state[this.tableKey].rows[this.modelId] || null;
-    }
-
-    /**
-     * @returns {Object}
-     */
-    _getPropertiesForInstanceMutation() {
-        return {
-            Model: this.Model,
-            modelId: this.fields.id,
-        };
+    _getInstanceRowFromStateOrEmpty(): Model | TableRowType {
+        return this.session.state[this.tableKey].rows[this.modelId] || {};
     }
 }
 

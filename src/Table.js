@@ -1,102 +1,115 @@
-import { ErrorValidation } from "./errors";
+// @flow strict
+import { Model } from "./";
+import { HadesValidationError } from "./objects/errors";
+
+type RowStorageType = { ... };
+
+type MetaStorageType = {|
+    lastIdIncremental: number,
+    idBlacklist: Array<number>,
+|};
+
+type TableRowType = {
+    id?: number,
+    ...
+};
 
 /**
  * Table constants.
  */
-const TABLE_NAME_PREFIX = "table_";
-
-/**
- * Symbol constants.
- */
-const SYMBOL_DESCRIPTION_KEY = "key";
-const SYMBOL_DESCRIPTION_META = "meta";
+const TABLE_NAME_PREFIX: string = "table_";
 
 /**
  * Index constants.
  */
-const INDEX_INVALID = -1;
+const INDEX_INVALID: number = -1;
 
 /**
  * Counter constants.
  */
-const INCREMENT_STEP = 1;
-const INCREMENT_START = 0;
+const INCREMENT_STEP: number = 1;
+const INCREMENT_START: number = 0;
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
  * @since 20200718 Initial creation.
  */
 class Table {
+    rows: RowStorageType;
+
+    _key: string;
+    _meta: MetaStorageType;
+
     /**
-     * @param {Model} Model
+     * @param {Class<Model>} ModelClass
      */
-    constructor(Model) {
+    constructor(ModelClass: Class<Model>): void {
         this.rows = this._createStorageForRows();
 
-        this.propertySymbolKey = Symbol(SYMBOL_DESCRIPTION_KEY);
-        this.propertySymbolMeta = Symbol(SYMBOL_DESCRIPTION_META);
-
-        this[this.propertySymbolMeta] = this._createStorageForMeta();
-        this[this.propertySymbolKey] = this._getModelTableName(Model);
+        this._meta = this._createStorageForMeta();
+        this._key = this._getModelTableName(ModelClass);
     }
 
     /**
      * @returns {string}
      */
-    getKey() {
-        return this[this.propertySymbolKey];
+    getKey(): string {
+        return this._key;
     }
 
     /**
-     * @param {Object} columns
+     * @param {TableRowType} columns
      */
-    insertRow(columns) {
-        const metadata = this._getMeta();
-        const hasOwnId = Boolean(columns.id);
-
+    insertRow(columns: TableRowType): void {
         /**
          * @returns {number}
+         *
+         * @this Table
          */
-        const determineModelId = () => {
-            if (hasOwnId) {
+        function determineModelId(): number {
+            if (columns.id) {
                 return columns.id;
             } else {
                 return this._getNextId();
             }
-        };
+        }
 
-        const modelId = determineModelId();
+        const modelId: number = determineModelId.call(this);
 
         if (this.rows[modelId]) {
-            this._createErrorNonUniqueRowIdForInsertion(modelId);
+            throw new HadesValidationError(
+                `Cannot insert new row since given ID '${modelId}' is not unique.`
+            );
         } else {
             this.rows[modelId] = {
                 ...columns,
                 id: modelId,
             };
 
-            if (hasOwnId) {
-                metadata.idBlacklist.push(modelId);
-                metadata.idBlacklist.sort((a, b) => a - b);
+            if (columns.id) {
+                this._meta.idBlacklist.push(modelId);
+                this._meta.idBlacklist.sort(
+                    (a: number, b: number): number => a - b
+                );
             } else {
-                metadata.lastIdIncremental = modelId;
+                this._meta.lastIdIncremental = modelId;
             }
         }
     }
 
     /**
-     * @param {string} rowId
-     * @param {Object} columns
+     * @param {number} rowId
+     * @param {TableRowType} columns
      */
-    updateRow(rowId, columns) {
+    updateRow(rowId: number, columns: TableRowType): void {
         Object.assign(this.rows[rowId], columns);
     }
 
     /**
-     * @param {Object} columns
+     * @param {TableRowType} columns
      */
-    upsertRow(columns) {
-        if (this.rows[columns.id]) {
+    upsertRow(columns: TableRowType): void {
+        if (columns.id && this.rows[columns.id]) {
             this.updateRow(columns.id, columns);
         } else {
             this.insertRow(columns);
@@ -104,39 +117,32 @@ class Table {
     }
 
     /**
-     * @param {Number} rowId
+     * @param {number} rowId
      */
-    deleteRow(rowId) {
-        const { idBlacklist } = this._getMeta();
-        const rowIdBlacklistIndex = idBlacklist.indexOf(rowId.valueOf());
+    deleteRow(rowId: number): void {
+        const { idBlacklist }: MetaStorageType = this._meta;
+        const rowIdBlacklistIndex: number = idBlacklist.indexOf(rowId);
 
         if (rowIdBlacklistIndex === INDEX_INVALID) {
-            // No need to clear this ID from blacklist.
+            // No need to clear this ID from the blacklist.
         } else {
             idBlacklist.splice(rowIdBlacklistIndex, 1);
         }
 
-        delete this.rows[rowId];
+        delete this.rows[rowId.toString()];
     }
 
     /**
-     * @returns {Object}
+     * @returns {RowStorageType}
      */
-    _getMeta() {
-        return this[this.propertySymbolMeta];
-    }
-
-    /**
-     * @returns {Object}
-     */
-    _createStorageForRows() {
+    _createStorageForRows(): RowStorageType {
         return {};
     }
 
     /**
-     * @returns {Object}
+     * @returns {MetaStorageType}
      */
-    _createStorageForMeta() {
+    _createStorageForMeta(): MetaStorageType {
         return {
             idBlacklist: [],
             lastIdIncremental: INCREMENT_START,
@@ -146,17 +152,17 @@ class Table {
     /**
      * @returns {number}
      */
-    _getNextId() {
-        const { lastIdIncremental, idBlacklist } = this._getMeta();
-        const nextIdIncremental = lastIdIncremental + INCREMENT_STEP;
+    _getNextId(): number {
+        const { idBlacklist, lastIdIncremental }: MetaStorageType = this._meta;
+        const nextIdIncremental: number = lastIdIncremental + INCREMENT_STEP;
 
         /**
          * @param {number} id
          *
          * @returns {number}
          */
-        const findNextNonBlacklistedId = (id) => {
-            const idBlacklistIndex = idBlacklist.indexOf(id);
+        function findNextNonBlacklistedId(id: number): number {
+            const idBlacklistIndex: number = idBlacklist.indexOf(id);
 
             if (idBlacklistIndex === INDEX_INVALID) {
                 return id;
@@ -165,30 +171,20 @@ class Table {
             } else {
                 return findNextNonBlacklistedId(id + INCREMENT_STEP);
             }
-        };
+        }
 
         return findNextNonBlacklistedId(nextIdIncremental);
     }
 
     /**
-     * @param {Model} Model
+     * @param {Class<Model>} ModelClass
      *
      * @returns {string}
      */
-    _getModelTableName(Model) {
-        return `${TABLE_NAME_PREFIX}${Model.toString().toLowerCase()}`;
-    }
-
-    /**
-     * @param {number} rowId
-     *
-     * @throws {ErrorValidation}
-     */
-    _createErrorNonUniqueRowIdForInsertion(rowId) {
-        throw new ErrorValidation(
-            `Cannot insert new row with non-unique ID '${rowId}'.`
-        );
+    _getModelTableName(ModelClass: Class<Model>): string {
+        return `${TABLE_NAME_PREFIX}${ModelClass.toString().toLowerCase()}`;
     }
 }
 
 export { Table };
+export type { TableRowType };

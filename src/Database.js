@@ -1,35 +1,45 @@
+// @flow strict
 import { Table } from "./Table";
+import { Model } from "./Model";
 import { Session } from "./Session";
+
+type StateType = { ... };
+type ActionType = {|
+    type: string,
+    payload?: { ... },
+|};
 
 /**
  * Type constants.
  */
-const TYPE_FUNCTION = "function";
+const TYPE_FUNCTION: string = "function";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
- * @since 22072020 Clean up.
+ * @since 20200718 Initial creation.
  */
 class Database {
+    registeredModels: Array<Class<Model>>;
+
     /**
-     * @param {Model[]} models
+     * @param {Array<Class<Model>>} models
      */
-    constructor(...models) {
+    constructor(...models: Array<Class<Model>>): void {
         this._registerModels(models);
     }
 
     /**
      * @returns {Function}
      */
-    reducer() {
+    reducer(): (state: StateType, action: ActionType) => StateType {
         /**
-         * @param {Object} [state]
-         * @param {Object} action
+         * @param {StateType} [state]
+         * @param {ActionType} action
          *
-         * @returns {Object}
+         * @returns {StateType}
          */
-        return (state = {}, action) => {
-            const session = this._createSession(state);
+        return (state: StateType = {}, action: ActionType): StateType => {
+            const session: Session = this._createSession(state);
 
             this._forModelsInSessionCreateTablesIfNeeded(session);
             this._forModelsInSessionApplyReducers(session, action);
@@ -39,61 +49,84 @@ class Database {
     }
 
     /**
-     * @param {Model[]} models
+     * @param {Array<Class<Model>>} models
      */
-    _registerModels(models) {
-        this.registeredModels = models.reduce((uniqueModels, Model) => {
-            if (uniqueModels.includes(Model)) {
-                this._createWarningDuplicateModel(Model.toString());
+    _registerModels(models: Array<Class<Model>>): void {
+        /**
+         * @param {Array<Class<Model>>} uniqueModels
+         * @param {Class<Model>} ModelClass
+         *
+         * @this Database
+         *
+         * @returns {Array<Class<Model>>}
+         */
+        function uniqueModelReducer(
+            uniqueModels: Array<Class<Model>>,
+            ModelClass: Class<Model>
+        ): Array<Class<Model>> {
+            if (uniqueModels.includes(ModelClass)) {
+                this._createWarningDuplicateModel(ModelClass.toString());
             } else {
-                uniqueModels.push(Model);
+                uniqueModels.push(ModelClass);
             }
 
             return uniqueModels;
-        }, []);
+        }
+
+        this.registeredModels = models.reduce(
+            uniqueModelReducer.bind(this),
+            []
+        );
     }
 
     /**
-     * @param {Object} state
+     * @param {StateType} state
      *
      * @returns {Session}
      */
-    _createSession(state) {
-        const session = new Session(state);
+    _createSession(state: StateType): Session {
+        const session: Session = new Session(state);
 
         session.addModels(this.registeredModels);
-        this.registeredModels.forEach((Model) => {
-            Model.addSession(session);
+        this.registeredModels.forEach((ModelClass: Class<Model>): void => {
+            ModelClass.addSession(session);
         });
 
         return session;
     }
 
     /**
-     * @param {Object} session
+     * @param {Session} session
      */
-    _forModelsInSessionCreateTablesIfNeeded(session) {
-        session.models.forEach((Model) => {
-            if (session.state[Model.getTableKeyOrNull()]) {
+    _forModelsInSessionCreateTablesIfNeeded(session: Session): void {
+        session.models.forEach((ModelClass: Class<Model>): void => {
+            const tableKeyOrNull:
+                | string
+                | null = ModelClass.getTableKeyOrNull();
+
+            if (tableKeyOrNull && session.state[tableKeyOrNull]) {
                 // Table already exists.
             } else {
-                const table = new Table(Model);
-                const tableKey = table.getKey();
+                const table: Table = new Table(ModelClass);
+                const tableKey: string = table.getKey();
 
-                Model.addTableKey(tableKey);
+                ModelClass.addTableKey(tableKey);
                 session.mergeIntoState({ [tableKey]: table });
             }
         });
     }
 
     /**
-     * @param {Object} session
-     * @param {Object} action
+     * @param {Session} session
+     * @param {ActionType} action
      */
-    _forModelsInSessionApplyReducers(session, action) {
-        session.models.forEach((Model) => {
-            if (typeof Model.reducer === TYPE_FUNCTION) {
-                Model.reducer.call(Model, action);
+    _forModelsInSessionApplyReducers(
+        session: Session,
+        action: ActionType
+    ): void {
+        session.models.forEach((ModelClass: Class<Model>): void => {
+            if (typeof ModelClass.reducer === TYPE_FUNCTION) {
+                ModelClass.reducer(action);
             } else {
                 // No reducer defined for this model.
             }
@@ -103,9 +136,10 @@ class Database {
     /**
      * @param {string} modelName
      */
-    _createWarningDuplicateModel(modelName) {
+    _createWarningDuplicateModel(modelName: string): void {
         console.warn(`Tried to register duplicate Model: '${modelName}'.`);
     }
 }
 
 export { Database };
+export type { StateType, ActionType };

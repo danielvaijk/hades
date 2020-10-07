@@ -1,120 +1,134 @@
-import { ErrorValidation } from "./errors";
+// @flow strict
+import { Model } from "./";
+import type { TableRowType } from "./Table";
+import { HadesValidationError } from "./objects/errors";
+
+/* eslint-disable flowtype/no-weak-types */
+type SchemaDefinitionType = {|
+    /* eslint-disable-next-line flowtype/no-primitive-constructor-types */
+    [fieldName: string]: Number | Class<any>,
+|};
+
+type ModelFieldsType = {|
+    id: number,
+    [fieldName: string]: any,
+|};
+
+type FieldInstancesType = [string, Class<any>];
+/* eslint-enable flowtype/no-weak-types */
 
 /**
  * Field name constants.
  */
-const FIELD_NAME_IDENTIFIER = "id";
+const FIELD_NAME_IDENTIFIER: string = "id";
+
+/**
+ * Type constants.
+ */
+const TYPE_UNDEFINED: string = "undefined";
+
+/**
+ * Separator constants.
+ */
+const SEPARATOR_SPACE: string = " ";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
  * @since 20200722 Initial creation.
  */
 class Schema {
+    schemaDefinition: SchemaDefinitionType;
+
     /**
-     * @param {Object} schemaDefinition
+     * @param {SchemaDefinitionType} schemaDefinition
      */
-    constructor(schemaDefinition) {
+    constructor(schemaDefinition: SchemaDefinitionType): void {
         this.schemaDefinition = schemaDefinition;
     }
 
     /**
-     * @param {Object} fieldValues
+     * @param {TableRowType} fieldValues
      *
-     * @returns {Object}
+     * @returns {ModelFieldsType}
+     * @throws {HadesValidationError}
      */
-    castValuesAgainstDefinition(fieldValues) {
+    castValuesAgainstDefinition(fieldValues: TableRowType): ModelFieldsType {
         if (fieldValues[FIELD_NAME_IDENTIFIER]) {
             // ID field is set.
         } else {
-            this._createErrorFieldIdIsRequired();
+            throw new HadesValidationError(
+                "ID is a required field for Model schema definition."
+            );
         }
 
         /**
-         * @type {[string, any][]}
-         */
-        const fieldEntries = Object.entries(this.schemaDefinition);
-
-        /**
-         * @param {Object} fieldInstances
-         * @param {[string, any]} currentField
+         * @param {SchemaDefinitionType} fieldInstances
+         * @param {FieldInstancesType} currentField
          *
-         * @returns {Object}
+         * @returns {SchemaDefinitionType}
          */
-        const reduceSchemaDefinition = (
-            fieldInstances,
-            [fieldName, FieldClass]
-        ) => ({
-            ...fieldInstances,
-            [fieldName]: new FieldClass(fieldValues[fieldName]),
-        });
+        function reduceSchemaDefinition(
+            fieldInstances: SchemaDefinitionType,
+            [fieldName, FieldClass]: FieldInstancesType
+        ): SchemaDefinitionType {
+            return {
+                ...fieldInstances,
+                [fieldName]: new FieldClass(fieldValues[fieldName]),
+            };
+        }
 
-        return fieldEntries.reduce(reduceSchemaDefinition, {
-            // ID is omitted from schema definition (it's always included).
-            [FIELD_NAME_IDENTIFIER]: new Number(
-                fieldValues[FIELD_NAME_IDENTIFIER]
-            ),
-        });
+        const schemaDefinitionBase: SchemaDefinitionType = {
+            // ID is omitted from schema definition — it's always included.
+            [FIELD_NAME_IDENTIFIER]: Number(fieldValues[FIELD_NAME_IDENTIFIER]),
+        };
+
+        // $FlowIssue
+        return Object.entries(this.schemaDefinition).reduce(
+            reduceSchemaDefinition,
+            schemaDefinitionBase
+        );
     }
 
     /**
-     * @param {Model} Model
-     * @param {Object} fields
+     * @param {Class<Model>} ModelClass
+     * @param {TableRowType} fields
      *
-     * @throws {Error}
+     * @throws {HadesValidationError}
      */
-    assertSchemaAllowsFieldsForMutation(Model, fields) {
-        const fieldWhitelist = [FIELD_NAME_IDENTIFIER];
+    assertSchemaAllowsFieldsForMutation(
+        ModelClass: Class<Model>,
+        fields: TableRowType
+    ): void {
+        const fieldWhitelist: Array<string> = [FIELD_NAME_IDENTIFIER];
 
         /**
          * @param {string} key
+         *
+         * @returns {boolean}
+         *
+         * @this Schema
          */
-        const isFieldSuperfluous = (key) => {
+        function isFieldSuperfluous(key: string): boolean {
             return (
                 fieldWhitelist.includes(key) === false &&
-                this.schemaDefinition[key] === undefined
+                typeof this.schemaDefinition[key] === TYPE_UNDEFINED
             );
-        };
-
-        /**
-         * @type {string}
-         */
-        const propertyNameSuperfluous = Object.keys(fields).find((key) => {
-            return isFieldSuperfluous(key);
-        });
-
-        if (propertyNameSuperfluous) {
-            this._createErrorModelPropertySuperfluous(
-                Model.toString(),
-                propertyNameSuperfluous
-            );
-        } else {
-            // Passed bouncer checks.
         }
-    }
 
-    /**
-     * @param {string} modelName
-     * @param {string} propertyNameSuperfluous
-     *
-     * @throws {ErrorValidation}
-     */
-    _createErrorModelPropertySuperfluous(modelName, propertyNameSuperfluous) {
-        throw new ErrorValidation(
-            [
-                `Cannot apply mutation to ${modelName} model,`,
-                `found superfluous property '${propertyNameSuperfluous}'.`,
-            ].join(" ")
-        );
-    }
-
-    /**
-     * @throws {ErrorValidation}
-     */
-    _createErrorFieldIdIsRequired() {
-        throw new ErrorValidation(
-            "ID is a required field for Model schema definition."
-        );
+        Object.keys(fields).forEach((key: string): void => {
+            if (isFieldSuperfluous.call(this, key)) {
+                throw new HadesValidationError(
+                    [
+                        `Cannot apply mutation to ${ModelClass.toString()} model,`,
+                        `found superfluous property '${key}'.`,
+                    ].join(SEPARATOR_SPACE)
+                );
+            } else {
+                // Field is allowed.
+            }
+        });
     }
 }
 
 export { Schema };
+export type { ModelFieldsType };
