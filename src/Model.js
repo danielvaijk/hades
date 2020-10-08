@@ -13,9 +13,9 @@ class Model {
     constructor(ModelClass, modelId) {
         this.modelId = modelId;
         this.Model = ModelClass;
-        this.session = Model.session;
-        this.tableKey = Model.tableKey;
-        this.sessionReference = Model.sessionReference;
+        this.session = this.Model.session;
+        this.tableKey = this.Model.tableKey;
+        this.sessionReference = this.Model.sessionReference;
 
         this.fields = this.Model.fields().castValuesAgainstDefinition(
             this._getInstanceRowFromStateOrNull() || {}
