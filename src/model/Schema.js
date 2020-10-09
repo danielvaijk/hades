@@ -1,7 +1,7 @@
 // @flow strict
 import { Model } from "./";
-import type { TableRowType } from "./Table";
-import { HadesValidationError } from "./objects/errors";
+import type { TableRowType } from "../database";
+import { HadesValidationError } from "../objects/errors";
 
 /* eslint-disable flowtype/no-weak-types */
 type SchemaDefinitionType = {|

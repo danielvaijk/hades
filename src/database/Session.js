@@ -1,10 +1,9 @@
 // @flow strict
-import { Model } from "./Model";
-import type { StateType } from "./Database";
-import { EnumEntry, Mutation } from "./objects";
-import { MutationTypeEnum } from "./objects/enums";
-import type { Table, TableRowType } from "./Table";
-import { HadesUnexpectedValueError } from "./objects/errors";
+import { Model } from "../model";
+import { EnumEntry, Mutation } from "../objects";
+import { MutationTypeEnum } from "../objects/enums";
+import type { Table, TableRowType, StateType } from "./";
+import { HadesUnexpectedValueError } from "../objects/errors";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>

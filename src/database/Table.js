@@ -1,6 +1,6 @@
 // @flow strict
-import { Model } from "./";
-import { HadesValidationError } from "./objects/errors";
+import { Model } from "../model";
+import { HadesValidationError } from "../objects/errors";
 
 type RowStorageType = { ... };
 

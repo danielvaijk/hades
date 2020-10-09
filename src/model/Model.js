@@ -1,10 +1,8 @@
 // @flow strict
-import { Session } from "./Session";
-import { Mutation } from "./objects";
-import type { TableRowType } from "./Table";
-import type { ActionType } from "./Database";
-import { MutationTypeEnum } from "./objects/enums";
-import type { Schema, ModelFieldsType } from "./Schema";
+import { Mutation } from "../objects";
+import type { Schema, ModelFieldsType } from "./";
+import { MutationTypeEnum } from "../objects/enums";
+import type { Session, ActionType, TableRowType } from "../database";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>

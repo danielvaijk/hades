@@ -1,7 +1,6 @@
 // @flow strict
-import { Table } from "./Table";
-import { Model } from "./Model";
-import { Session } from "./Session";
+import { Model } from "../model";
+import { Table, Session } from "./";
 
 type StateType = { ... };
 type ActionType = {|

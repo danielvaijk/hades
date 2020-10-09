@@ -11,9 +11,9 @@
         // the "strict" directive is unnecessary.
         "sourceType": "module",
         "ecmaFeatures": {
+            "jsx": false,
             "globalReturn": false,
-            "impliedStrict": true,
-            "jsx": false
+            "impliedStrict": true
         }
     },
     "extends": [
