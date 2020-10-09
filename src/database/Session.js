@@ -1,9 +1,10 @@
 // @flow strict
-import { Table } from "./";
-import { Model } from "../model";
-import { EnumEntry, Mutation } from "../objects";
-import { MutationTypeEnum } from "../objects/enums";
-import { HadesUnexpectedValueError } from "../objects/errors";
+import type { Table } from "./Table";
+import type { Model } from "../model/Model";
+import type { Mutation } from "../objects/Mutation";
+import type { EnumEntry } from "../objects/EnumEntry";
+import { MutationTypeEnum } from "../objects/enums/MutationTypeEnum";
+import { HadesUnexpectedValueError } from "../objects/errors/HadesUnexpectedValueError";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>

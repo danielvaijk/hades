@@ -1,7 +1,7 @@
 // @flow strict
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
-import { Model } from "../model";
-import { HadesValidationError } from "../objects/errors";
+import type { Model } from "../model/Model";
+import { HadesValidationError } from "../objects/errors/HadesValidationError";
 
 opaque type RowStorageType = { ... };
 

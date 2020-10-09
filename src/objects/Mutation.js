@@ -1,6 +1,6 @@
 // @flow strict
-import { Model } from "../model";
-import { EnumEntry } from "../objects";
+import type { Model } from "../model/Model";
+import type { EnumEntry } from "../objects/EnumEntry";
 
 type MutationOptionsType = {|
     type: EnumEntry,

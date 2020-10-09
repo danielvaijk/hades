@@ -1,7 +1,7 @@
 // @flow strict
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
-import { Model } from "./";
-import { HadesValidationError } from "../objects/errors";
+import type { Model } from "./Model";
+import { HadesValidationError } from "../objects/errors/HadesValidationError";
 
 /* eslint-disable flowtype/no-weak-types */
 opaque type SchemaDefinitionType = {|

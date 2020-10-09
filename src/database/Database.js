@@ -1,6 +1,7 @@
 // @flow strict
-import { Model } from "../model";
-import { Table, Session } from "./";
+import { Table } from "./Table";
+import { Session } from "./Session";
+import type { Model } from "../model/Model";
 
 /**
  * Type constants.

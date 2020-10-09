@@ -2,6 +2,7 @@
 /* eslint-env node */
 import path from "path";
 import { DefinePlugin } from "webpack";
+import CircularDependencyPlugin from "circular-dependency-plugin";
 
 /**
  * Path constants.
@@ -17,16 +18,22 @@ const REGEX_DIRECTORY_NODE_MODULES: RegExp = /node_modules/u;
 
 export default {
     mode: "production",
-    entry: PATH_ABSOLUTE_SOURCE,
+    entry: `${PATH_ABSOLUTE_SOURCE}/index.js`,
     target: "web",
     devtool: "source-map",
     output: {
-        filename: "index.js",
+        libraryTarget: "this",
+        filename: "hades.min.js",
         path: PATH_ABSOLUTE_DISTRIBUTION,
     },
     plugins: [
         new DefinePlugin({
-            GLOBAL_DEFAULT_KEY_NAME_ID: "id",
+            GLOBAL_DEFAULT_KEY_NAME_ID: JSON.stringify("id"),
+        }),
+        new CircularDependencyPlugin({
+            failOnError: true,
+            cwd: process.cwd(),
+            exclude: REGEX_DIRECTORY_NODE_MODULES,
         }),
     ],
     optimization: {
@@ -34,7 +41,7 @@ export default {
     },
     resolve: {
         extensions: [".js"],
-        modules: [PATH_ABSOLUTE_SOURCE],
+        modules: [PATH_ABSOLUTE_SOURCE, "node_modules"],
     },
     module: {
         rules: [

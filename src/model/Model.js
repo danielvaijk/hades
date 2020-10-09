@@ -1,8 +1,8 @@
 // @flow strict
-import { Schema } from "./";
-import { Mutation } from "../objects";
-import { Session } from "../database";
-import { MutationTypeEnum } from "../objects/enums";
+import type { Schema } from "./Schema";
+import { Mutation } from "../objects/Mutation";
+import type { Session } from "../database/Session";
+import { MutationTypeEnum } from "../objects/enums/MutationTypeEnum";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>

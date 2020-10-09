@@ -1,5 +1,5 @@
 // @flow strict
-import { EnumEntry } from "../";
+import { EnumEntry } from "../EnumEntry";
 
 /**
  * Mutation type constants.
