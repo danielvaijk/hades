@@ -1,7 +1,6 @@
 // @flow strict
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import { Model } from "./";
-import type { TableRowType } from "../database";
 import { HadesValidationError } from "../objects/errors";
 
 /* eslint-disable flowtype/no-weak-types */
@@ -11,10 +10,6 @@ opaque type SchemaDefinitionType = {|
 |};
 
 opaque type FieldInstancesType = [string, Class<any>];
-
-type ModelFieldsType = {|
-    [fieldName: string]: any,
-|};
 /* eslint-enable flowtype/no-weak-types */
 
 /**
@@ -128,4 +123,3 @@ class Schema {
 }
 
 export { Schema };
-export type { ModelFieldsType };

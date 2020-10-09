@@ -1,8 +1,8 @@
 // @flow strict
+import { Table } from "./";
 import { Model } from "../model";
 import { EnumEntry, Mutation } from "../objects";
 import { MutationTypeEnum } from "../objects/enums";
-import type { Table, TableRowType, StateType } from "./";
 import { HadesUnexpectedValueError } from "../objects/errors";
 
 /**

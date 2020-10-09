@@ -1,7 +1,6 @@
 // @flow strict
 import { Model } from "../model";
 import { EnumEntry } from "../objects";
-import type { TableRowType } from "../database";
 
 type MutationOptionsType = {|
     type: EnumEntry,

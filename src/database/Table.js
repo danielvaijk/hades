@@ -10,11 +10,6 @@ opaque type MetaStorageType = {|
     idBlacklist: Array<number>,
 |};
 
-type TableRowType = {
-    id?: number,
-    ...
-};
-
 /**
  * Table constants.
  */
@@ -204,4 +199,3 @@ class Table {
 }
 
 export { Table };
-export type { TableRowType };

@@ -2,12 +2,6 @@
 import { Model } from "../model";
 import { Table, Session } from "./";
 
-type StateType = { ... };
-type ActionType = {|
-    type: string,
-    payload?: { ... },
-|};
-
 /**
  * Type constants.
  */
@@ -141,4 +135,3 @@ class Database {
 }
 
 export { Database };
-export type { StateType, ActionType };

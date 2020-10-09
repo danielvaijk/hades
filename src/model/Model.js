@@ -1,8 +1,8 @@
 // @flow strict
+import { Schema } from "./";
 import { Mutation } from "../objects";
-import type { Schema, ModelFieldsType } from "./";
+import { Session } from "../database";
 import { MutationTypeEnum } from "../objects/enums";
-import type { Session, ActionType, TableRowType } from "../database";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
