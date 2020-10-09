@@ -1,10 +1,12 @@
 [ignore]
+dist/*.js
 
 [include]
-./src/*.js
+src/*.js
 
 [libs]
 flow
+src/definitions
 
 [lints]
 

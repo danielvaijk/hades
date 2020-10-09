@@ -1,26 +1,21 @@
 // @flow strict
+/* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import { Model } from "./";
 import type { TableRowType } from "../database";
 import { HadesValidationError } from "../objects/errors";
 
 /* eslint-disable flowtype/no-weak-types */
-type SchemaDefinitionType = {|
+opaque type SchemaDefinitionType = {|
     /* eslint-disable-next-line flowtype/no-primitive-constructor-types */
     [fieldName: string]: Number | Class<any>,
 |};
 
+opaque type FieldInstancesType = [string, Class<any>];
+
 type ModelFieldsType = {|
-    id: number,
     [fieldName: string]: any,
 |};
-
-type FieldInstancesType = [string, Class<any>];
 /* eslint-enable flowtype/no-weak-types */
-
-/**
- * Field name constants.
- */
-const FIELD_NAME_IDENTIFIER: string = "id";
 
 /**
  * Type constants.
@@ -53,7 +48,7 @@ class Schema {
      * @throws {HadesValidationError}
      */
     castValuesAgainstDefinition(fieldValues: TableRowType): ModelFieldsType {
-        if (fieldValues[FIELD_NAME_IDENTIFIER]) {
+        if (fieldValues[GLOBAL_DEFAULT_KEY_NAME_ID]) {
             // ID field is set.
         } else {
             throw new HadesValidationError(
@@ -79,7 +74,9 @@ class Schema {
 
         const schemaDefinitionBase: SchemaDefinitionType = {
             // ID is omitted from schema definition — it's always included.
-            [FIELD_NAME_IDENTIFIER]: Number(fieldValues[FIELD_NAME_IDENTIFIER]),
+            [GLOBAL_DEFAULT_KEY_NAME_ID]: Number(
+                fieldValues[GLOBAL_DEFAULT_KEY_NAME_ID]
+            ),
         };
 
         // $FlowIssue
@@ -99,7 +96,7 @@ class Schema {
         ModelClass: Class<Model>,
         fields: TableRowType
     ): void {
-        const fieldWhitelist: Array<string> = [FIELD_NAME_IDENTIFIER];
+        const fieldWhitelist: Array<string> = [GLOBAL_DEFAULT_KEY_NAME_ID];
 
         /**
          * @param {string} key

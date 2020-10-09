@@ -1,10 +1,11 @@
 // @flow strict
+/* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import { Model } from "../model";
 import { HadesValidationError } from "../objects/errors";
 
-type RowStorageType = { ... };
+opaque type RowStorageType = { ... };
 
-type MetaStorageType = {|
+opaque type MetaStorageType = {|
     lastIdIncremental: number,
     idBlacklist: Array<number>,
 |};
@@ -74,8 +75,8 @@ class Table {
          * @this Table
          */
         function determineModelId(): number {
-            if (columns.id) {
-                return columns.id;
+            if (columns[GLOBAL_DEFAULT_KEY_NAME_ID]) {
+                return columns[GLOBAL_DEFAULT_KEY_NAME_ID];
             } else {
                 return this._getNextId();
             }
@@ -90,10 +91,10 @@ class Table {
         } else {
             this.rows[modelId] = {
                 ...columns,
-                id: modelId,
+                [GLOBAL_DEFAULT_KEY_NAME_ID]: modelId,
             };
 
-            if (columns.id) {
+            if (columns[GLOBAL_DEFAULT_KEY_NAME_ID]) {
                 this._meta.idBlacklist.push(modelId);
                 this._meta.idBlacklist.sort(
                     (a: number, b: number): number => a - b
@@ -116,8 +117,11 @@ class Table {
      * @param {TableRowType} columns
      */
     upsertRow(columns: TableRowType): void {
-        if (columns.id && this.rows[columns.id]) {
-            this.updateRow(columns.id, columns);
+        if (
+            columns[GLOBAL_DEFAULT_KEY_NAME_ID] &&
+            this.rows[columns[GLOBAL_DEFAULT_KEY_NAME_ID]]
+        ) {
+            this.updateRow(columns[GLOBAL_DEFAULT_KEY_NAME_ID], columns);
         } else {
             this.insertRow(columns);
         }
