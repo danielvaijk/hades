@@ -1,0 +1,15 @@
+[ignore]
+dist/*.js
+
+[include]
+src/*.js
+
+[libs]
+flow
+src/definitions
+
+[lints]
+
+[options]
+
+[strict]

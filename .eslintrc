@@ -11,9 +11,9 @@
         // the "strict" directive is unnecessary.
         "sourceType": "module",
         "ecmaFeatures": {
+            "jsx": false,
             "globalReturn": false,
-            "impliedStrict": true,
-            "jsx": false
+            "impliedStrict": true
         }
     },
     "extends": [
@@ -142,7 +142,7 @@
         ],
         "block-scoped-var": "error",
         "class-methods-use-this": "off",
-        "complexity": ["warn", 10],
+        "complexity": ["warn", 20],
         "consistent-return": [
             "error",
             {
@@ -152,7 +152,7 @@
         "curly": ["error", "all"],
         "default-case": "error",
         "default-case-last": "error",
-        "default-param-last": "error",
+        "default-param-last": "off",
         "dot-location": ["error", "property"],
         "dot-notation": "error",
         "eqeqeq": "error",
@@ -199,7 +199,6 @@
             {
                 "ignore": [1],
                 "ignoreArrayIndexes": true,
-                "ignoreDefaultValues": false,
                 "enforceConst": true,
                 "detectObjects": true
             }
@@ -433,9 +432,79 @@
                 "before": false,
                 "after": true
             }
-        ]
+        ],
+        /**
+         * Rules for Flow.
+         */
+        "flowtype/array-style-complex-type": ["error", "verbose"],
+        "flowtype/array-style-simple-type": ["error", "verbose"],
+        "flowtype/arrow-parens": [
+            "error",
+            "always",
+            {
+                "requireForBlockBody": true
+            }
+        ],
+        "flowtype/boolean-style": ["error", "boolean"],
+        "flowtype/define-flow-type": "error",
+        "flowtype/generic-spacing": ["error", "never"],
+        "flowtype/newline-after-flow-annotation": ["error", "never"],
+        "flowtype/no-dupe-keys": "error",
+        "flowtype/no-existential-type": "error",
+        "flowtype/no-flow-fix-me-comments": "error",
+        "flowtype/no-mixed": "error",
+        "flowtype/no-mutable-array": "off",
+        "flowtype/no-primitive-constructor-types": "error",
+        "flowtype/no-types-missing-file-annotation": "error",
+        "flowtype/no-unused-expressions": "error",
+        "flowtype/no-weak-types": "error",
+        "flowtype/require-compound-type-alias": ["error", "never"],
+        "flowtype/require-exact-type": ["error", "always"],
+        "flowtype/require-indexer-name": ["error", "always"],
+        "flowtype/require-inexact-type": ["error", "always"],
+        "flowtype/require-parameter-type": [
+            "error",
+            {
+                "excludeArrowFunctions": false
+            }
+        ],
+        "flowtype/require-readonly-react-props": "off",
+        "flowtype/require-return-type": [
+            "error",
+            "always",
+            {
+                "excludeArrowFunctions": false,
+                "annotateUndefined": "always"
+            }
+        ],
+        "flowtype/require-types-at-top": ["error", "always"],
+        "flowtype/require-valid-file-annotation": [
+            "error",
+            "always",
+            {
+                "annotationStyle": "line",
+                "strict": true
+            }
+        ],
+        "flowtype/require-variable-type": "error",
+        "flowtype/semi": ["error", "always"],
+        "flowtype/sort-keys": "off",
+        "flowtype/space-before-generic-bracket": ["error", "never"],
+        "flowtype/space-before-type-colon": ["error", "never"],
+        "flowtype/spread-exact-type": "error",
+        "flowtype/type-id-match": ["error", "^([A-Z][a-z0-9]+)+Type$"],
+        "flowtype/type-import-style": [
+            "error",
+            "declaration",
+            {
+                "ignoreTypeDefault": false
+            }
+        ],
+        "flowtype/union-intersection-spacing": ["error", "always"],
+        "flowtype/use-flow-type": "warn",
+        "flowtype/valid-syntax": "warn"
     },
-    "plugins": ["import", "prettier"],
+    "plugins": ["flowtype", "import", "prettier"],
     "env": {
         // This also automatically sets parserOptions.ecmaVersion to '11'.
         "es2020": true,

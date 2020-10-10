@@ -1,3 +1,4 @@
-export { Model } from "./Model";
-export { Schema } from "./Schema";
-export { Database } from "./Database";
+// @flow strict
+export { Model } from "./model/Model";
+export { Schema } from "./model/Schema";
+export { Database } from "./database/Database";
