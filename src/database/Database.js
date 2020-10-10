@@ -105,6 +105,8 @@ class Database {
                 const tableKey: string = table.getKey();
 
                 ModelClass.addTableKey(tableKey);
+                ModelClass.addIdentifierKey(table.getIdentifierKey());
+
                 session.mergeIntoState({ [tableKey]: table });
             }
         });

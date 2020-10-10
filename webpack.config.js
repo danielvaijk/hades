@@ -16,6 +16,11 @@ const PATH_ABSOLUTE_DISTRIBUTION: string = path.resolve(__dirname, "dist");
 const REGEX_FILE_JAVASCRIPT: RegExp = /.js$/u;
 const REGEX_DIRECTORY_NODE_MODULES: RegExp = /node_modules/u;
 
+/**
+ * Index constants.
+ */
+const INDEX_INVALID: number = -1;
+
 export default {
     mode: "production",
     entry: `${PATH_ABSOLUTE_SOURCE}/index.js`,
@@ -28,6 +33,7 @@ export default {
     },
     plugins: [
         new DefinePlugin({
+            GLOBAL_INDEX_INVALID: INDEX_INVALID,
             GLOBAL_DEFAULT_KEY_NAME_ID: JSON.stringify("id"),
         }),
         new CircularDependencyPlugin({

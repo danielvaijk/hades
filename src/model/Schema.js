@@ -1,16 +1,17 @@
 // @flow strict
+/* global GLOBAL_INDEX_INVALID */
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import type { Model } from "./Model";
+import { EnumEntry } from "../objects/EnumEntry";
+import { FieldTypeEnum } from "../objects/enums/FieldTypeEnum";
 import { HadesValidationError } from "../objects/errors/HadesValidationError";
 
-/* eslint-disable flowtype/no-weak-types */
-opaque type SchemaDefinitionType = {|
-    /* eslint-disable-next-line flowtype/no-primitive-constructor-types */
-    [fieldName: string]: Number | Class<any>,
-|};
+opaque type FieldDefinitionType = FieldClassType | EnumEntry;
+opaque type FieldInstancesType = [string, FieldDefinitionType];
 
-opaque type FieldInstancesType = [string, Class<any>];
-/* eslint-enable flowtype/no-weak-types */
+opaque type SchemaDefinitionType = {|
+    [fieldName: string]: FieldDefinitionType,
+|};
 
 /**
  * Type constants.
@@ -37,17 +38,32 @@ class Schema {
     }
 
     /**
+     * @param {FieldClassType} FieldClass
+     *
+     * @returns {EnumEntry}
+     */
+    static defineIdentifierField(FieldClass: FieldClassType): EnumEntry {
+        return FieldTypeEnum.IDENTIFIER(FieldClass);
+    }
+
+    /**
      * @param {TableRowType} fieldValues
      *
      * @returns {ModelFieldsType}
      * @throws {HadesValidationError}
      */
     castValuesAgainstDefinition(fieldValues: TableRowType): ModelFieldsType {
-        if (fieldValues[GLOBAL_DEFAULT_KEY_NAME_ID]) {
-            // ID field is set.
+        const definedIdentifierFieldNameOrNull:
+            | string
+            | null = this.getDefinedIdentifierFieldNameOrNull();
+        const fieldNameIdentifier: string =
+            definedIdentifierFieldNameOrNull || GLOBAL_DEFAULT_KEY_NAME_ID;
+
+        if (fieldValues[fieldNameIdentifier]) {
+            // Value for identifier field was provided.
         } else {
             throw new HadesValidationError(
-                "ID is a required field for Model schema definition."
+                `Value is required for identifier field '${fieldNameIdentifier}'.`
             );
         }
 
@@ -59,25 +75,40 @@ class Schema {
          */
         function reduceSchemaDefinition(
             fieldInstances: SchemaDefinitionType,
-            [fieldName, FieldClass]: FieldInstancesType
+            [fieldName, fieldValue]: FieldInstancesType
         ): SchemaDefinitionType {
+            const FieldClass: FieldClassType =
+                fieldValue instanceof EnumEntry
+                    ? fieldValue.getValue()
+                    : fieldValue;
+
             return {
                 ...fieldInstances,
                 [fieldName]: new FieldClass(fieldValues[fieldName]),
             };
         }
 
-        const schemaDefinitionBase: SchemaDefinitionType = {
-            // ID is omitted from schema definition — it's always included.
-            [GLOBAL_DEFAULT_KEY_NAME_ID]: Number(
-                fieldValues[GLOBAL_DEFAULT_KEY_NAME_ID]
-            ),
-        };
+        /**
+         * @returns {SchemaDefinitionType}
+         *
+         * @this Schema
+         */
+        function determineSchemaDefinitionBase(): SchemaDefinitionType {
+            if (definedIdentifierFieldNameOrNull) {
+                return {};
+            } else {
+                return {
+                    [GLOBAL_DEFAULT_KEY_NAME_ID]: Number(
+                        fieldValues[GLOBAL_DEFAULT_KEY_NAME_ID]
+                    ),
+                };
+            }
+        }
 
         // $FlowIssue
         return Object.entries(this.schemaDefinition).reduce(
             reduceSchemaDefinition,
-            schemaDefinitionBase
+            determineSchemaDefinitionBase.call(this)
         );
     }
 
@@ -119,6 +150,32 @@ class Schema {
                 // Field is allowed.
             }
         });
+    }
+
+    /**
+     * @returns {string|null}
+     */
+    getDefinedIdentifierFieldNameOrNull(): string | null {
+        // $FlowIssue
+        const fieldDefinitions: Array<FieldInstancesType> = Object.entries(
+            this.schemaDefinition
+        );
+        const fieldIdentifierIndex: number = fieldDefinitions.findIndex(
+            // $FlowIssue
+            // eslint-disable-next-line no-unused-vars
+            ([fieldName, fieldValue]: FieldInstancesType): boolean => {
+                return (
+                    fieldValue instanceof EnumEntry &&
+                    fieldValue.equals(FieldTypeEnum.IDENTIFIER())
+                );
+            }
+        );
+
+        if (fieldIdentifierIndex === GLOBAL_INDEX_INVALID) {
+            return null;
+        } else {
+            return fieldDefinitions[fieldIdentifierIndex][0];
+        }
     }
 }
 

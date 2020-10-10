@@ -1,4 +1,5 @@
 // @flow strict
+/* global GLOBAL_INDEX_INVALID */
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import type { Model } from "../model/Model";
 import { HadesValidationError } from "../objects/errors/HadesValidationError";
@@ -16,11 +17,6 @@ opaque type MetaStorageType = {|
 const TABLE_NAME_PREFIX: string = "table_";
 
 /**
- * Index constants.
- */
-const INDEX_INVALID: number = -1;
-
-/**
  * Counter constants.
  */
 const INCREMENT_STEP: number = 1;
@@ -33,7 +29,8 @@ const INCREMENT_START: number = 0;
 class Table {
     rows: RowStorageType;
 
-    _key: string;
+    _keyTable: string;
+    _keyIdentifier: string;
     _meta: MetaStorageType;
 
     /**
@@ -41,16 +38,23 @@ class Table {
      */
     constructor(ModelClass: Class<Model>): void {
         this.rows = this._createStorageForRows();
-
         this._meta = this._createStorageForMeta();
-        this._key = this._getModelTableName(ModelClass);
+        this._keyTable = this._getModelTableName(ModelClass);
+        this._keyIdentifier = this._getModelIdentifierFieldName(ModelClass);
     }
 
     /**
      * @returns {string}
      */
     getKey(): string {
-        return this._key;
+        return this._keyTable;
+    }
+
+    /**
+     * @returns {string}
+     */
+    getIdentifierKey(): string {
+        return this._keyIdentifier;
     }
 
     /**
@@ -70,8 +74,8 @@ class Table {
          * @this Table
          */
         function determineModelId(): number {
-            if (columns[GLOBAL_DEFAULT_KEY_NAME_ID]) {
-                return columns[GLOBAL_DEFAULT_KEY_NAME_ID];
+            if (columns[this._keyIdentifier]) {
+                return columns[this._keyIdentifier];
             } else {
                 return this._getNextId();
             }
@@ -86,10 +90,10 @@ class Table {
         } else {
             this.rows[modelId] = {
                 ...columns,
-                [GLOBAL_DEFAULT_KEY_NAME_ID]: modelId,
+                [this._keyIdentifier]: modelId,
             };
 
-            if (columns[GLOBAL_DEFAULT_KEY_NAME_ID]) {
+            if (columns[this._keyIdentifier]) {
                 this._meta.idBlacklist.push(modelId);
                 this._meta.idBlacklist.sort(
                     (a: number, b: number): number => a - b
@@ -113,10 +117,10 @@ class Table {
      */
     upsertRow(columns: TableRowType): void {
         if (
-            columns[GLOBAL_DEFAULT_KEY_NAME_ID] &&
-            this.rows[columns[GLOBAL_DEFAULT_KEY_NAME_ID]]
+            columns[this._keyIdentifier] &&
+            this.rows[columns[this._keyIdentifier]]
         ) {
-            this.updateRow(columns[GLOBAL_DEFAULT_KEY_NAME_ID], columns);
+            this.updateRow(columns[this._keyIdentifier], columns);
         } else {
             this.insertRow(columns);
         }
@@ -129,7 +133,7 @@ class Table {
         const { idBlacklist }: MetaStorageType = this._meta;
         const rowIdBlacklistIndex: number = idBlacklist.indexOf(rowId);
 
-        if (rowIdBlacklistIndex === INDEX_INVALID) {
+        if (rowIdBlacklistIndex === GLOBAL_INDEX_INVALID) {
             // No need to clear this ID from the blacklist.
         } else {
             idBlacklist.splice(rowIdBlacklistIndex, 1);
@@ -177,7 +181,7 @@ class Table {
         function findNextNonBlacklistedId(id: number): number {
             const idBlacklistIndex: number = idBlacklist.indexOf(id);
 
-            if (idBlacklistIndex === INDEX_INVALID) {
+            if (idBlacklistIndex === GLOBAL_INDEX_INVALID) {
                 return id;
             } else if (idBlacklistIndex === idBlacklist.length - 1) {
                 return id + INCREMENT_STEP;
@@ -196,6 +200,19 @@ class Table {
      */
     _getModelTableName(ModelClass: Class<Model>): string {
         return `${TABLE_NAME_PREFIX}${ModelClass.toString().toLowerCase()}`;
+    }
+
+    /**
+     * @param {Class<Model>} ModelClass
+     *
+     * @returns {string}
+     */
+    _getModelIdentifierFieldName(ModelClass: Class<Model>): string {
+        const fieldIdentifierNameOrNull:
+            | string
+            | null = ModelClass.fields().getDefinedIdentifierFieldNameOrNull();
+
+        return fieldIdentifierNameOrNull || GLOBAL_DEFAULT_KEY_NAME_ID;
     }
 }
 
