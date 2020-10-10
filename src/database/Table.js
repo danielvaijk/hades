@@ -142,6 +142,7 @@ class Table {
      */
     truncate(): void {
         this.rows = this._createStorageForRows();
+        this._meta = this._createStorageForMeta();
     }
 
     /**
