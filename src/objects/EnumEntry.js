@@ -1,17 +1,18 @@
 // @flow strict
+/* eslint-disable flowtype/no-weak-types */
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
  * @since 20201007 Initial creation.
  */
 class EnumEntry {
     _key: string;
-    _value: string;
+    _value: any;
 
     /**
      * @param {string} key
-     * @param {string} value
+     * @param {any} value
      */
-    constructor(key: string, value: string): void {
+    constructor(key: string, value: any): void {
         this._key = key;
         this._value = value;
     }
@@ -19,7 +20,14 @@ class EnumEntry {
     /**
      * @returns {string}
      */
-    getValue(): string {
+    getKey(): string {
+        return this._key;
+    }
+
+    /**
+     * @returns {any}
+     */
+    getValue(): any {
         return this._value;
     }
 
@@ -29,7 +37,7 @@ class EnumEntry {
      * @returns {boolean}
      */
     equals(entry: EnumEntry): boolean {
-        return entry.getValue() === this._value;
+        return entry.getKey() === this._key;
     }
 }
 
