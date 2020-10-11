@@ -8,7 +8,7 @@ import { HadesValidationError } from "../objects/errors/HadesValidationError";
 
 type RowStorageType = {|
     // eslint-disable-next-line flowtype/no-weak-types
-    [key: string | number]: any,
+    [key: ModelIdentifierType]: any,
 |};
 
 opaque type MetaStorageType = {|
@@ -28,6 +28,11 @@ const INCREMENT_STEP: number = 1;
 const INCREMENT_START: number = 0;
 
 /**
+ * Radix constants.
+ */
+const RADIX_DECIMAL: number = 10;
+
+/**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
  * @since 20200718 Initial creation.
  */
@@ -35,7 +40,7 @@ class Table {
     _keyTable: string;
     _rows: RowStorageType;
     _meta: MetaStorageType;
-    _keyIdentifierOrNull: string | null;
+    _keyIdentifierOrNull: ModelIdentifierType | null;
 
     /**
      * @param {Class<Model>} ModelClass
@@ -57,10 +62,14 @@ class Table {
     }
 
     /**
-     * @returns {string}
+     * @returns {ModelIdentifierType}
      */
     getIdentifierKey(): string {
-        return this._keyIdentifierOrNull || GLOBAL_DEFAULT_KEY_NAME_ID;
+        if (this._keyIdentifierOrNull) {
+            return this._keyIdentifierOrNull.toString();
+        } else {
+            return GLOBAL_DEFAULT_KEY_NAME_ID;
+        }
     }
 
     /**
@@ -91,11 +100,11 @@ class Table {
         }
 
         /**
-         * @returns {number}
+         * @returns {ModelIdentifierType}
          *
          * @this Table
          */
-        function determineModelId(): number {
+        function determineModelId(): ModelIdentifierType {
             if (columns[identifierKey]) {
                 return columns[identifierKey];
             } else {
@@ -103,7 +112,7 @@ class Table {
             }
         }
 
-        const modelId: number = determineModelId.call(this);
+        const modelId: ModelIdentifierType = determineModelId.call(this);
 
         if (this._rows[modelId]) {
             throw new HadesValidationError(
@@ -115,22 +124,28 @@ class Table {
                 [identifierKey]: modelId,
             };
 
-            if (columns[identifierKey]) {
-                this._meta.idBlacklist.push(modelId);
-                this._meta.idBlacklist.sort(
-                    (a: number, b: number): number => a - b
-                );
+            if (this._keyIdentifierOrNull) {
+                // Don't use metadata if we are using a defined identifier key.
             } else {
-                this._meta.lastIdIncremental = modelId;
+                const modelIdDecimal: number = parseInt(modelId, RADIX_DECIMAL);
+
+                if (columns[identifierKey]) {
+                    this._meta.idBlacklist.push(modelIdDecimal);
+                    this._meta.idBlacklist.sort(
+                        (a: number, b: number): number => a - b
+                    );
+                } else {
+                    this._meta.lastIdIncremental = modelIdDecimal;
+                }
             }
         }
     }
 
     /**
-     * @param {number} rowId
+     * @param {ModelIdentifierType} rowId
      * @param {TableRowType} columns
      */
-    updateRow(rowId: number, columns: TableRowType): void {
+    updateRow(rowId: ModelIdentifierType, columns: TableRowType): void {
         Object.assign(this._rows[rowId], columns);
     }
 
@@ -138,7 +153,7 @@ class Table {
      * @param {TableRowType} columns
      */
     upsertRow(columns: TableRowType): void {
-        const identifierKey: string = this.getIdentifierKey();
+        const identifierKey: ModelIdentifierType = this.getIdentifierKey();
 
         if (columns[identifierKey] && this._rows[columns[identifierKey]]) {
             this.updateRow(columns[identifierKey], columns);
@@ -148,9 +163,9 @@ class Table {
     }
 
     /**
-     * @param {number} rowId
+     * @param {ModelIdentifierType} rowId
      */
-    deleteRow(rowId: number): void {
+    deleteRow(rowId: ModelIdentifierType): void {
         const { idBlacklist }: MetaStorageType = this._meta;
         const rowIdBlacklistIndex: number = idBlacklist.indexOf(rowId);
 
@@ -226,16 +241,12 @@ class Table {
     /**
      * @param {Class<Model>} ModelClass
      *
-     * @returns {string|null}
+     * @returns {ModelIdentifierType|null}
      */
     _getModelIdentifierFieldNameOrNull(
         ModelClass: Class<Model>
-    ): string | null {
-        const fieldIdentifierNameOrNull:
-            | string
-            | null = ModelClass.fields().getDefinedIdentifierFieldNameOrNull();
-
-        return fieldIdentifierNameOrNull;
+    ): ModelIdentifierType | null {
+        return ModelClass.fields().getDefinedIdentifierFieldNameOrNull();
     }
 }
 
