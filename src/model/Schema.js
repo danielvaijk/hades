@@ -97,7 +97,7 @@ class Schema {
         }
 
         // $FlowIssue
-        return Object.entries(this.schemaDefinition).reduce(
+        return Object.entries(this._schemaDefinition).reduce(
             reduceSchemaDefinition,
             determineSchemaDefinitionBase.call(this)
         );

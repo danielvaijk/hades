@@ -11,16 +11,16 @@ import { HadesValidationError } from "../objects/errors/HadesValidationError";
  * @since 20200718 Initial creation.
  */
 class Model {
-    _modelId: number;
     _session: Session;
     _tableKey: string;
-    _identifierKey: string;
     _fields: ModelFieldsType;
     _ModelClass: Class<Model>;
+    _modelId: ModelIdentifierType;
+    _identifierKey: ModelIdentifierType;
 
     static session: Session;
     static tableKey: string;
-    static identifierKey: string;
+    static identifierKey: ModelIdentifierType;
 
     static fields: () => Schema;
     static toString: () => string;
@@ -28,9 +28,9 @@ class Model {
 
     /**
      * @param {Class<Model>} ModelClass
-     * @param {number} modelId
+     * @param {ModelIdentifierType} modelId
      */
-    constructor(ModelClass: Class<Model>, modelId: number): void {
+    constructor(ModelClass: Class<Model>, modelId: ModelIdentifierType): void {
         this._modelId = modelId;
         this._ModelClass = ModelClass;
         this._session = this._ModelClass.session;
@@ -116,11 +116,11 @@ class Model {
     }
 
     /**
-     * @param {string} modelId
+     * @param {ModelIdentifierType} modelId
      *
      * @returns {Model}
      */
-    static withId(modelId: number): Model {
+    static withId(modelId: ModelIdentifierType): Model {
         return new Model(this, modelId);
     }
 
@@ -139,9 +139,9 @@ class Model {
     }
 
     /**
-     * @param {string} identifierKey
+     * @param {ModelIdentifierType} identifierKey
      */
-    static addIdentifierKey(identifierKey: string): void {
+    static addIdentifierKey(identifierKey: ModelIdentifierType): void {
         this.identifierKey = identifierKey;
     }
 

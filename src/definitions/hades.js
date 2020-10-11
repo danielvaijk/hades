@@ -1,12 +1,13 @@
 // @flow strict
 /* eslint-disable flowtype/no-weak-types */
 declare type FieldClassType = Class<any>;
+declare type ModelIdentifierType = string | number;
 declare type TableRowType = {
-    id?: number,
+    id?: ModelIdentifierType,
     ...
 };
 
 declare type ModelFieldsType = {|
-    [fieldName: string]: any,
+    [fieldName: string | number]: any,
 |};
 /* eslint-enable flowtype/no-weak-types */
