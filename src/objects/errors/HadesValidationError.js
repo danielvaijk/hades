@@ -1,5 +1,10 @@
 // @flow strict
 /**
+ * Error constants.
+ */
+const ERROR_NAME: string = "HadesValidationError";
+
+/**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
  * @since 22072020 Clean up.
  */
@@ -8,7 +13,7 @@ class HadesValidationError extends Error {
      * @returns {string}
      */
     get name(): string {
-        return "HadesValidationError";
+        return ERROR_NAME;
     }
 
     /**

@@ -1,6 +1,7 @@
 // @flow strict
 import type { Schema } from "./Schema";
 import { Mutation } from "../objects/Mutation";
+import type { Table } from "../database/Table";
 import type { Session } from "../database/Session";
 import { MutationTypeEnum } from "../objects/enums/MutationTypeEnum";
 import { HadesValidationError } from "../objects/errors/HadesValidationError";
@@ -10,12 +11,12 @@ import { HadesValidationError } from "../objects/errors/HadesValidationError";
  * @since 20200718 Initial creation.
  */
 class Model {
-    modelId: number;
-    session: Session;
-    tableKey: string;
-    identifierKey: string;
-    fields: ModelFieldsType;
-    ModelClass: Class<Model>;
+    _modelId: number;
+    _session: Session;
+    _tableKey: string;
+    _identifierKey: string;
+    _fields: ModelFieldsType;
+    _ModelClass: Class<Model>;
 
     static session: Session;
     static tableKey: string;
@@ -30,22 +31,22 @@ class Model {
      * @param {number} modelId
      */
     constructor(ModelClass: Class<Model>, modelId: number): void {
-        this.modelId = modelId;
-        this.ModelClass = ModelClass;
-        this.session = this.ModelClass.session;
-        this.tableKey = this.ModelClass.tableKey;
-        this.identifierKey = this.ModelClass.identifierKey;
+        this._modelId = modelId;
+        this._ModelClass = ModelClass;
+        this._session = this._ModelClass.session;
+        this._tableKey = this._ModelClass.tableKey;
+        this._identifierKey = this._ModelClass.identifierKey;
 
-        const modelSchemaDefinition: Schema = this.ModelClass.fields();
-        const fieldValuesOrNull: Model | null = this._getInstanceRowFromStateOrNull();
+        const modelSchemaDefinition: Schema = this._ModelClass.fields();
+        const fieldValuesOrNull: Model | null = this._getFieldValuesFromTableOrNull();
 
         if (fieldValuesOrNull) {
-            this.fields = modelSchemaDefinition.castValuesAgainstDefinition(
+            this._fields = modelSchemaDefinition.castValuesAgainstDefinition(
                 fieldValuesOrNull
             );
         } else {
             throw new HadesValidationError(
-                "No data exists for this Model instance."
+                `No data exists for Model instance with ID '${modelId}'.`
             );
         }
     }
@@ -54,12 +55,12 @@ class Model {
      * @param {TableRowType} fields
      */
     update(fields: TableRowType): void {
-        this.session.applyMutation(
+        this._session.applyMutation(
             new Mutation({
                 fields,
-                ModelClass: this.ModelClass,
+                ModelClass: this._ModelClass,
                 type: MutationTypeEnum.UPDATE(),
-                modelId: this.fields[this.identifierKey],
+                modelId: this._fields[this._identifierKey],
             })
         );
     }
@@ -67,11 +68,11 @@ class Model {
     /**
      */
     delete(): void {
-        this.session.applyMutation(
+        this._session.applyMutation(
             new Mutation({
-                ModelClass: this.ModelClass,
+                ModelClass: this._ModelClass,
                 type: MutationTypeEnum.DELETE(),
-                modelId: this.fields[this.identifierKey],
+                modelId: this._fields[this._identifierKey],
             })
         );
     }
@@ -152,10 +153,26 @@ class Model {
     }
 
     /**
-     * @returns {Model|null}
+     * @returns {Table|null}
      */
-    _getInstanceRowFromStateOrNull(): Model | null {
-        return this.session.state[this.tableKey].rows[this.modelId] || null;
+    _getTableInstanceOrNull(): Table | null {
+        return this?._session.getState()[this._tableKey ?? ""] || null;
+    }
+
+    /**
+     * @returns {Model|null}
+     * @throws {HadesValidationError}
+     */
+    _getFieldValuesFromTableOrNull(): Model | null {
+        const tableOrNull: Table | null = this._getTableInstanceOrNull();
+
+        if (tableOrNull) {
+            return tableOrNull.getRows()[this._modelId] || null;
+        } else {
+            throw new HadesValidationError(
+                "Cannot get Model instance with missing Table."
+            );
+        }
     }
 }
 

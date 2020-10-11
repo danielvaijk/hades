@@ -11,28 +11,42 @@ import { HadesUnexpectedValueError } from "../objects/errors/HadesUnexpectedValu
  * @since 20200718 Initial creation.
  */
 class Session {
-    state: StateType;
-    models: Array<Class<Model>>;
+    _state: StateType;
+    _models: Array<Class<Model>>;
 
     /**
      * @param {StateType} state
      */
     constructor(state: StateType): void {
-        this.state = state;
+        this._state = state;
+    }
+
+    /**
+     * @returns {StateType}
+     */
+    getState(): StateType {
+        return this._state;
+    }
+
+    /**
+     * @returns {Array<Class<Model>>}
+     */
+    getModels(): Array<Class<Model>> {
+        return this._models;
     }
 
     /**
      * @param {Array<Class<Model>>} models
      */
     addModels(models: Array<Class<Model>>): void {
-        this.models = models;
+        this._models = models;
     }
 
     /**
      * @param {StateType} object
      */
     mergeIntoState(object: StateType): void {
-        Object.assign(this.state, object);
+        Object.assign(this._state, object);
     }
 
     /**
@@ -100,7 +114,7 @@ class Session {
         const tableKeyOrNull: string | null = ModelClass.getTableKeyOrNull();
 
         if (tableKeyOrNull) {
-            return this.state[tableKeyOrNull];
+            return this._state[tableKeyOrNull];
         } else {
             return null;
         }

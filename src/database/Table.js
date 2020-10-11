@@ -1,10 +1,15 @@
 // @flow strict
 /* global GLOBAL_INDEX_INVALID */
+/* global GLOBAL_TYPE_UNDEFINED */
+/* global GLOBAL_SEPARATOR_SPACE */
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import type { Model } from "../model/Model";
 import { HadesValidationError } from "../objects/errors/HadesValidationError";
 
-opaque type RowStorageType = { ... };
+type RowStorageType = {|
+    // eslint-disable-next-line flowtype/no-weak-types
+    [key: string | number]: any,
+|};
 
 opaque type MetaStorageType = {|
     lastIdIncremental: number,
@@ -27,20 +32,21 @@ const INCREMENT_START: number = 0;
  * @since 20200718 Initial creation.
  */
 class Table {
-    rows: RowStorageType;
-
     _keyTable: string;
-    _keyIdentifier: string;
+    _rows: RowStorageType;
     _meta: MetaStorageType;
+    _keyIdentifierOrNull: string | null;
 
     /**
      * @param {Class<Model>} ModelClass
      */
     constructor(ModelClass: Class<Model>): void {
-        this.rows = this._createStorageForRows();
+        this._rows = this._createStorageForRows();
         this._meta = this._createStorageForMeta();
         this._keyTable = this._getModelTableName(ModelClass);
-        this._keyIdentifier = this._getModelIdentifierFieldName(ModelClass);
+        this._keyIdentifierOrNull = this._getModelIdentifierFieldNameOrNull(
+            ModelClass
+        );
     }
 
     /**
@@ -54,28 +60,44 @@ class Table {
      * @returns {string}
      */
     getIdentifierKey(): string {
-        return this._keyIdentifier;
+        return this._keyIdentifierOrNull || GLOBAL_DEFAULT_KEY_NAME_ID;
     }
 
     /**
      * @returns {RowStorageType}
      */
     getRows(): RowStorageType {
-        return JSON.parse(JSON.stringify(this.rows));
+        return JSON.parse(JSON.stringify(this._rows));
     }
 
     /**
      * @param {TableRowType} columns
      */
     insertRow(columns: TableRowType): void {
+        const identifierKey: string = this.getIdentifierKey();
+
+        if (
+            this._keyIdentifierOrNull &&
+            typeof columns[this._keyIdentifierOrNull] === GLOBAL_TYPE_UNDEFINED
+        ) {
+            throw new HadesValidationError(
+                [
+                    "Cannot insert Table row with missing value for",
+                    `defined identifier '${this._keyIdentifierOrNull}'.`,
+                ].join(GLOBAL_SEPARATOR_SPACE)
+            );
+        } else {
+            // We're using the default identifier. So, move on.
+        }
+
         /**
          * @returns {number}
          *
          * @this Table
          */
         function determineModelId(): number {
-            if (columns[this._keyIdentifier]) {
-                return columns[this._keyIdentifier];
+            if (columns[identifierKey]) {
+                return columns[identifierKey];
             } else {
                 return this._getNextId();
             }
@@ -83,17 +105,17 @@ class Table {
 
         const modelId: number = determineModelId.call(this);
 
-        if (this.rows[modelId]) {
+        if (this._rows[modelId]) {
             throw new HadesValidationError(
-                `Cannot insert new row since given ID '${modelId}' is not unique.`
+                `Cannot insert new Table row since given ID '${modelId}' is not unique.`
             );
         } else {
-            this.rows[modelId] = {
+            this._rows[modelId] = {
                 ...columns,
-                [this._keyIdentifier]: modelId,
+                [identifierKey]: modelId,
             };
 
-            if (columns[this._keyIdentifier]) {
+            if (columns[identifierKey]) {
                 this._meta.idBlacklist.push(modelId);
                 this._meta.idBlacklist.sort(
                     (a: number, b: number): number => a - b
@@ -109,18 +131,17 @@ class Table {
      * @param {TableRowType} columns
      */
     updateRow(rowId: number, columns: TableRowType): void {
-        Object.assign(this.rows[rowId], columns);
+        Object.assign(this._rows[rowId], columns);
     }
 
     /**
      * @param {TableRowType} columns
      */
     upsertRow(columns: TableRowType): void {
-        if (
-            columns[this._keyIdentifier] &&
-            this.rows[columns[this._keyIdentifier]]
-        ) {
-            this.updateRow(columns[this._keyIdentifier], columns);
+        const identifierKey: string = this.getIdentifierKey();
+
+        if (columns[identifierKey] && this._rows[columns[identifierKey]]) {
+            this.updateRow(columns[identifierKey], columns);
         } else {
             this.insertRow(columns);
         }
@@ -139,13 +160,13 @@ class Table {
             idBlacklist.splice(rowIdBlacklistIndex, 1);
         }
 
-        delete this.rows[rowId.toString()];
+        delete this._rows[rowId.toString()];
     }
 
     /**
      */
     truncate(): void {
-        this.rows = this._createStorageForRows();
+        this._rows = this._createStorageForRows();
         this._meta = this._createStorageForMeta();
     }
 
@@ -205,14 +226,16 @@ class Table {
     /**
      * @param {Class<Model>} ModelClass
      *
-     * @returns {string}
+     * @returns {string|null}
      */
-    _getModelIdentifierFieldName(ModelClass: Class<Model>): string {
+    _getModelIdentifierFieldNameOrNull(
+        ModelClass: Class<Model>
+    ): string | null {
         const fieldIdentifierNameOrNull:
             | string
             | null = ModelClass.fields().getDefinedIdentifierFieldNameOrNull();
 
-        return fieldIdentifierNameOrNull || GLOBAL_DEFAULT_KEY_NAME_ID;
+        return fieldIdentifierNameOrNull;
     }
 }
 

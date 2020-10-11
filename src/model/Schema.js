@@ -1,5 +1,7 @@
 // @flow strict
 /* global GLOBAL_INDEX_INVALID */
+/* global GLOBAL_TYPE_UNDEFINED */
+/* global GLOBAL_SEPARATOR_SPACE */
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import type { Model } from "./Model";
 import { EnumEntry } from "../objects/EnumEntry";
@@ -8,33 +10,22 @@ import { HadesValidationError } from "../objects/errors/HadesValidationError";
 
 opaque type FieldDefinitionType = FieldClassType | EnumEntry;
 opaque type FieldInstancesType = [string, FieldDefinitionType];
-
 opaque type SchemaDefinitionType = {|
     [fieldName: string]: FieldDefinitionType,
 |};
-
-/**
- * Type constants.
- */
-const TYPE_UNDEFINED: string = "undefined";
-
-/**
- * Separator constants.
- */
-const SEPARATOR_SPACE: string = " ";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
  * @since 20200722 Initial creation.
  */
 class Schema {
-    schemaDefinition: SchemaDefinitionType;
+    _schemaDefinition: SchemaDefinitionType;
 
     /**
      * @param {SchemaDefinitionType} schemaDefinition
      */
     constructor(schemaDefinition: SchemaDefinitionType): void {
-        this.schemaDefinition = schemaDefinition;
+        this._schemaDefinition = schemaDefinition;
     }
 
     /**
@@ -134,7 +125,7 @@ class Schema {
         function isFieldSuperfluous(key: string): boolean {
             return (
                 fieldWhitelist.includes(key) === false &&
-                typeof this.schemaDefinition[key] === TYPE_UNDEFINED
+                typeof this._schemaDefinition[key] === GLOBAL_TYPE_UNDEFINED
             );
         }
 
@@ -144,7 +135,7 @@ class Schema {
                     [
                         `Cannot apply mutation to ${ModelClass.toString()} model,`,
                         `found superfluous property '${key}'.`,
-                    ].join(SEPARATOR_SPACE)
+                    ].join(GLOBAL_SEPARATOR_SPACE)
                 );
             } else {
                 // Field is allowed.
@@ -158,7 +149,7 @@ class Schema {
     getDefinedIdentifierFieldNameOrNull(): string | null {
         // $FlowIssue
         const fieldDefinitions: Array<FieldInstancesType> = Object.entries(
-            this.schemaDefinition
+            this._schemaDefinition
         );
         const fieldIdentifierIndex: number = fieldDefinitions.findIndex(
             // $FlowIssue
