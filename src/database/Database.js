@@ -13,7 +13,7 @@ const TYPE_FUNCTION: string = "function";
  * @since 20200718 Initial creation.
  */
 class Database {
-    registeredModels: Array<Class<Model>>;
+    _registeredModels: Array<Class<Model>>;
 
     /**
      * @param {Array<Class<Model>>} models
@@ -38,7 +38,7 @@ class Database {
             this._forModelsInSessionCreateTablesIfNeeded(session);
             this._forModelsInSessionApplyReducers(session, action);
 
-            return session.state;
+            return session.getState();
         };
     }
 
@@ -67,7 +67,7 @@ class Database {
             return uniqueModels;
         }
 
-        this.registeredModels = models.reduce(
+        this._registeredModels = models.reduce(
             uniqueModelReducer.bind(this),
             []
         );
@@ -81,8 +81,8 @@ class Database {
     _createSession(state: StateType): Session {
         const session: Session = new Session(state);
 
-        session.addModels(this.registeredModels);
-        this.registeredModels.forEach((ModelClass: Class<Model>): void => {
+        session.addModels(this._registeredModels);
+        this._registeredModels.forEach((ModelClass: Class<Model>): void => {
             ModelClass.addSession(session);
         });
 
@@ -93,12 +93,12 @@ class Database {
      * @param {Session} session
      */
     _forModelsInSessionCreateTablesIfNeeded(session: Session): void {
-        session.models.forEach((ModelClass: Class<Model>): void => {
+        session.getModels().forEach((ModelClass: Class<Model>): void => {
             const tableKeyOrNull:
                 | string
                 | null = ModelClass.getTableKeyOrNull();
 
-            if (tableKeyOrNull && session.state[tableKeyOrNull]) {
+            if (tableKeyOrNull && session.getState()[tableKeyOrNull]) {
                 // Table already exists.
             } else {
                 const table: Table = new Table(ModelClass);
@@ -120,7 +120,7 @@ class Database {
         session: Session,
         action: ActionType
     ): void {
-        session.models.forEach((ModelClass: Class<Model>): void => {
+        session.getModels().forEach((ModelClass: Class<Model>): void => {
             if (typeof ModelClass.reducer === TYPE_FUNCTION) {
                 ModelClass.reducer(action);
             } else {
