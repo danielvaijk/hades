@@ -18,6 +18,8 @@ class HadesUnexpectedValueError extends Error {
 
     /**
      * @param {string} value
+     *
+     * @returns {void}
      */
     set name(value: string): void {
         // Do nothing.

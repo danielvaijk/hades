@@ -1,4 +1,5 @@
 // @flow strict
+/* global TableRowType */
 import type { Schema } from "./Schema";
 import { Mutation } from "../objects/Mutation";
 import type { Table } from "../database/Table";
@@ -29,6 +30,8 @@ class Model {
     /**
      * @param {Class<Model>} ModelClass
      * @param {ModelIdentifierType} modelId
+     *
+     * @returns {void}
      */
     constructor(ModelClass: Class<Model>, modelId: ModelIdentifierType): void {
         this._modelId = modelId;
@@ -53,6 +56,8 @@ class Model {
 
     /**
      * @param {TableRowType} fields
+     *
+     * @returns {void}
      */
     update(fields: TableRowType): void {
         this._session.applyMutation(
@@ -66,6 +71,7 @@ class Model {
     }
 
     /**
+     * @returns {void}
      */
     delete(): void {
         this._session.applyMutation(
@@ -79,6 +85,8 @@ class Model {
 
     /**
      * @param {TableRowType} fields
+     *
+     * @returns {void}
      */
     static create(fields: TableRowType): void {
         this.session.applyMutation(
@@ -92,6 +100,8 @@ class Model {
 
     /**
      * @param {TableRowType} fields
+     *
+     * @returns {void}
      */
     static upsert(fields: TableRowType): void {
         this.session.applyMutation(
@@ -104,6 +114,7 @@ class Model {
     }
 
     /**
+     * @returns {void}
      */
     static deleteAll(): void {
         this.session.applyMutation(
@@ -133,6 +144,8 @@ class Model {
 
     /**
      * @param {string} tableKey
+     *
+     * @returns {void}
      */
     static addTableKey(tableKey: string): void {
         this.tableKey = tableKey;
@@ -140,6 +153,8 @@ class Model {
 
     /**
      * @param {ModelIdentifierType} identifierKey
+     *
+     * @returns {void}
      */
     static addIdentifierKey(identifierKey: ModelIdentifierType): void {
         this.identifierKey = identifierKey;
@@ -147,6 +162,8 @@ class Model {
 
     /**
      * @param {Session} session
+     *
+     * @returns {void}
      */
     static addSession(session: Session): void {
         this.session = session;

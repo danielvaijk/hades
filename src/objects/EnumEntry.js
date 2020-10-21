@@ -11,6 +11,8 @@ class EnumEntry {
     /**
      * @param {string} key
      * @param {any} value
+     *
+     * @returns {void}
      */
     constructor(key: string, value: any): void {
         this._key = key;

@@ -23,6 +23,8 @@ class Mutation {
 
     /**
      * @param {MutationOptionsType} options
+     *
+     * @returns {void}
      */
     constructor(options: MutationOptionsType): void {
         this._type = options.type;
@@ -61,7 +63,7 @@ class Mutation {
     }
 
     /**
-     * @returns {FieldsForMutation|null}
+     * @returns {TableRowType|null}
      */
     getFieldsOrNull(): TableRowType | null {
         return this._fieldsOrNull;

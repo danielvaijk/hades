@@ -16,6 +16,8 @@ class Session {
 
     /**
      * @param {StateType} state
+     *
+     * @returns {void}
      */
     constructor(state: StateType): void {
         this._state = state;
@@ -37,6 +39,8 @@ class Session {
 
     /**
      * @param {Array<Class<Model>>} models
+     *
+     * @returns {void}
      */
     addModels(models: Array<Class<Model>>): void {
         this._models = models;
@@ -44,6 +48,8 @@ class Session {
 
     /**
      * @param {StateType} object
+     *
+     * @returns {void}
      */
     mergeIntoState(object: StateType): void {
         Object.assign(this._state, object);
@@ -52,6 +58,7 @@ class Session {
     /**
      * @param {Mutation} mutation
      *
+     * @returns {void}
      * @throws {HadesUnexpectedValueError}
      */
     applyMutation(mutation: Mutation): void {
@@ -125,6 +132,7 @@ class Session {
      * @param {number|null} modelIdOrNull
      * @param {boolean} willApplyToEntireTable
      *
+     * @returns {void}
      * @throws {HadesUnexpectedValueError}
      */
     _applyDeleteMutation(
@@ -147,6 +155,7 @@ class Session {
      * @param {Table} pointerTable
      * @param {TableRowType|null} fieldsOrNull
      *
+     * @returns {void}
      * @throws {HadesUnexpectedValueError}
      */
     _applyInsertMutation(
@@ -166,6 +175,7 @@ class Session {
      * @param {Table} pointerTable
      * @param {TableRowType|null} fieldsOrNull
      *
+     * @returns {void}
      * @throws {HadesUnexpectedValueError}
      */
     _applyUpsertMutation(
@@ -186,6 +196,7 @@ class Session {
      * @param {TableRowType|null} fieldsOrNull
      * @param {number|null} modelIdOrNull
      *
+     * @returns {void}
      * @throws {HadesUnexpectedValueError}
      */
     _applyUpdateMutation(
