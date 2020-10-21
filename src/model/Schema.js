@@ -1,4 +1,6 @@
 // @flow strict
+/* global TableRowType */
+/* global ModelFieldsType */
 /* global GLOBAL_INDEX_INVALID */
 /* global GLOBAL_TYPE_UNDEFINED */
 /* global GLOBAL_SEPARATOR_SPACE */
@@ -23,6 +25,8 @@ class Schema {
 
     /**
      * @param {SchemaDefinitionType} schemaDefinition
+     *
+     * @returns {void}
      */
     constructor(schemaDefinition: SchemaDefinitionType): void {
         this._schemaDefinition = schemaDefinition;
@@ -107,6 +111,7 @@ class Schema {
      * @param {Class<Model>} ModelClass
      * @param {TableRowType} fields
      *
+     * @returns {void}
      * @throws {HadesValidationError}
      */
     assertSchemaAllowsFieldsForMutation(

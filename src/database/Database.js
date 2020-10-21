@@ -1,4 +1,6 @@
 // @flow strict
+/* global StateType */
+/* global ActionType */
 import { Table } from "./Table";
 import { Session } from "./Session";
 import type { Model } from "../model/Model";
@@ -17,6 +19,8 @@ class Database {
 
     /**
      * @param {Array<Class<Model>>} models
+     *
+     * @returns {void}
      */
     constructor(...models: Array<Class<Model>>): void {
         this._registerModels(models);
@@ -44,6 +48,8 @@ class Database {
 
     /**
      * @param {Array<Class<Model>>} models
+     *
+     * @returns {void}
      */
     _registerModels(models: Array<Class<Model>>): void {
         /**
@@ -91,6 +97,8 @@ class Database {
 
     /**
      * @param {Session} session
+     *
+     * @returns {void}
      */
     _forModelsInSessionCreateTablesIfNeeded(session: Session): void {
         session.getModels().forEach((ModelClass: Class<Model>): void => {
@@ -115,6 +123,8 @@ class Database {
     /**
      * @param {Session} session
      * @param {ActionType} action
+     *
+     * @returns {void}
      */
     _forModelsInSessionApplyReducers(
         session: Session,
@@ -131,6 +141,8 @@ class Database {
 
     /**
      * @param {string} modelName
+     *
+     * @returns {void}
      */
     _createWarningDuplicateModel(modelName: string): void {
         console.warn(`Tried to register duplicate Model: '${modelName}'.`);

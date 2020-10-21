@@ -1,4 +1,5 @@
 // @flow strict
+/* global TableRowType */
 /* global GLOBAL_INDEX_INVALID */
 /* global GLOBAL_TYPE_UNDEFINED */
 /* global GLOBAL_SEPARATOR_SPACE */
@@ -44,6 +45,8 @@ class Table {
 
     /**
      * @param {Class<Model>} ModelClass
+     *
+     * @returns {void}
      */
     constructor(ModelClass: Class<Model>): void {
         this._rows = this._createStorageForRows();
@@ -81,6 +84,8 @@ class Table {
 
     /**
      * @param {TableRowType} columns
+     *
+     * @returns {void}
      */
     insertRow(columns: TableRowType): void {
         const identifierKey: string = this.getIdentifierKey();
@@ -144,6 +149,8 @@ class Table {
     /**
      * @param {ModelIdentifierType} rowId
      * @param {TableRowType} columns
+     *
+     * @returns {void}
      */
     updateRow(rowId: ModelIdentifierType, columns: TableRowType): void {
         Object.assign(this._rows[rowId], columns);
@@ -151,6 +158,8 @@ class Table {
 
     /**
      * @param {TableRowType} columns
+     *
+     * @returns {void}
      */
     upsertRow(columns: TableRowType): void {
         const identifierKey: ModelIdentifierType = this.getIdentifierKey();
@@ -164,6 +173,8 @@ class Table {
 
     /**
      * @param {ModelIdentifierType} rowId
+     *
+     * @returns {void}
      */
     deleteRow(rowId: ModelIdentifierType): void {
         const { idBlacklist }: MetaStorageType = this._meta;
@@ -179,6 +190,7 @@ class Table {
     }
 
     /**
+     * @returns {void}
      */
     truncate(): void {
         this._rows = this._createStorageForRows();

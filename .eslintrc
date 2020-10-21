@@ -17,7 +17,6 @@
         }
     },
     "extends": [
-        "eslint:recommended",
         "plugin:import/errors",
         "plugin:import/warnings",
         // Must be the last plugin in the extension array.
@@ -502,13 +501,196 @@
         ],
         "flowtype/union-intersection-spacing": ["error", "always"],
         "flowtype/use-flow-type": "warn",
-        "flowtype/valid-syntax": "warn"
+        "flowtype/valid-syntax": "warn",
+        /**
+         * Rules for JSDoc.
+         */
+        "jsdoc/check-access": "error",
+        "jsdoc/check-alignment": ["error", "never"],
+        "jsdoc/check-examples": "off",
+        "jsdoc/check-indentation": [
+            "error",
+            {
+                "excludeTags": []
+            }
+        ],
+        // FIXME: Enable with ["error", "never"] once "never" option is implemented.
+        "jsdoc/check-line-alignment": "off",
+        "jsdoc/check-param-names": [
+            "error",
+            {
+                "enableFixer": true,
+                "checkDestructured": true,
+                "checkRestProperty": true,
+                "checkTypesPattern": "true",
+                "allowExtraTrailingParamDocs": false
+            }
+        ],
+        "jsdoc/check-property-names": [
+            "error",
+            {
+                "enableFixer": false
+            }
+        ],
+        "jsdoc/check-syntax": "error",
+        "jsdoc/check-tag-names": [
+            "error",
+            {
+                "definedTags": []
+            }
+        ],
+        "jsdoc/check-types": [
+            "error",
+            {
+                "noDefaults": true,
+                "exemptTagContexts": [],
+                "unifyParentAndChildTypeChecks": true
+            }
+        ],
+        "jsdoc/check-values": "off",
+        "jsdoc/empty-tags": [
+            "error",
+            {
+                "tags": []
+            }
+        ],
+        "jsdoc/implements-on-classes": [
+            "error",
+            {
+                "contexts": ["any"]
+            }
+        ],
+        "jsdoc/match-description": "off",
+        "jsdoc/newline-after-description": ["error", "always"],
+        "jsdoc/no-bad-blocks": [
+            "error",
+            {
+                "ignore": []
+            }
+        ],
+        "jsdoc/no-defaults": [
+            "error",
+            {
+                "contexts": ["any"],
+                "noOptionalParamNames": false
+            }
+        ],
+        "jsdoc/no-types": "off",
+        "jsdoc/no-undefined-types": [
+            "error",
+            {
+                "definedTypes": []
+            }
+        ],
+        "jsdoc/require-description-complete-sentence": "off",
+        "jsdoc/require-description": "off",
+        "jsdoc/require-example": "off",
+        "jsdoc/require-file-overview": "off",
+        "jsdoc/require-hyphen-before-param-description": ["error", "never"],
+        "jsdoc/require-jsdoc": [
+            "error",
+            {
+                "contexts": ["any"],
+                "publicOnly": false,
+                "enableFixer": false,
+                "checkGetters": true,
+                "checkSetters": true,
+                "checkConstructors": true,
+                "exemptEmptyFunctions": false,
+                "exemptEmptyConstructors": false,
+                "require": {
+                    "ClassExpression": true,
+                    "MethodDefinition": true,
+                    "ClassDeclaration": true,
+                    "FunctionExpression": false,
+                    "FunctionDeclaration": true,
+                    "ArrowFunctionExpression": false
+                }
+            }
+        ],
+        "jsdoc/require-param-description": "off",
+        "jsdoc/require-param-name": [
+            "error",
+            {
+                "contexts": ["any"]
+            }
+        ],
+        "jsdoc/require-param-type": [
+            "error",
+            {
+                "contexts": ["any"]
+            }
+        ],
+        "jsdoc/require-param": [
+            "error",
+            {
+                "exemptedBy": [],
+                "checkGetters": true,
+                "checkSetters": true,
+                "enableFixer": false,
+                "autoIncrementBase": 0,
+                "enableRootFixer": false,
+                "checkConstructors": true,
+                "checkRestProperty": true,
+                "checkDestructured": true,
+                "unnamedRootBase": ["root"],
+                "checkDestructuredRoots": true,
+                "enableRestElementFixer": false
+            }
+        ],
+        "jsdoc/require-property": "error",
+        "jsdoc/require-property-description": "error",
+        "jsdoc/require-property-name": "error",
+        "jsdoc/require-property-type": "error",
+        "jsdoc/require-returns-check": "error",
+        "jsdoc/require-returns-description": "off",
+        "jsdoc/require-returns-type": [
+            "error",
+            {
+                "contexts": ["any"]
+            }
+        ],
+        "jsdoc/require-returns": [
+            "error",
+            {
+                "exemptedBy": [],
+                "contexts": ["any"],
+                "checkGetters": true,
+                "checkConstructors": true,
+                "forceRequireReturn": true,
+                "forceReturnsWithAsync": true
+            }
+        ],
+        "jsdoc/require-throws": [
+            "error",
+            {
+                "exemptedBy": [],
+                "contexts": ["any"]
+            }
+        ],
+        "jsdoc/valid-types": [
+            "error",
+            {
+                "allowEmptyNamepaths": true
+            }
+        ]
     },
-    "plugins": ["flowtype", "import", "prettier"],
+    "plugins": ["flowtype", "jsdoc", "import", "prettier"],
     "env": {
         // This also automatically sets parserOptions.ecmaVersion to '11'.
         "es2020": true,
         "browser": true
+    },
+    "settings": {
+        "jsdoc": {
+            "preferredTypes": {
+                "*": false,
+                "[]": false,
+                "Object": false,
+                "Class": "Class",
+                "undefined": false
+            }
+        }
     },
     "reportUnusedDisableDirectives": true
 }
