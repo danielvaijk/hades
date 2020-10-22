@@ -1,7 +1,6 @@
 // @flow strict
 /* global ActionType */
 /* global PayloadType */
-
 /**
  * Action type constants.
  */

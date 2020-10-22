@@ -1,7 +1,7 @@
 // @flow strict
-import type { Table } from "../../database/Table";
-import { Database } from "../../database/Database";
 import { UserModel } from "../mock/models/UserModel";
+import type { Table } from "../../src/database/Table";
+import { Database } from "../../src/database/Database";
 import { UserActionsLib } from "../mock/store/actions/UserActionsLib";
 
 /**

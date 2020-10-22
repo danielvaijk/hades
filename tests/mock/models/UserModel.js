@@ -1,7 +1,7 @@
 // @flow strict
 /* global ActionType */
-import { Model } from "../../../model/Model";
-import { Schema } from "../../../model/Schema";
+import { Model } from "../../../src/model/Model";
+import { Schema } from "../../../src/model/Schema";
 import { UserActionsLib } from "../../mock/store/actions/UserActionsLib";
 
 /**
