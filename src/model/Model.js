@@ -23,9 +23,9 @@ class Model {
     static tableKey: string;
     static identifierKey: ModelIdentifierType;
 
-    static fields: () => Schema;
-    static toString: () => string;
-    static reducer: (action: ActionType) => void;
+    static +fields: () => Schema;
+    static +toString: () => string;
+    static +reducer: (action: ActionType) => void;
 
     /**
      * @param {Class<Model>} ModelClass

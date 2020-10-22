@@ -27,7 +27,8 @@
         "email": "daniel@invidiacreative.net"
     },
     "scripts": {
-        "build": "node --require @babel/register ./node_modules/webpack/bin/webpack"
+        "build": "node --require @babel/register ./node_modules/webpack/bin/webpack",
+        "test": "node --require @babel/register ./node_modules/jest/bin/jest --passWithNoTests --config=jest.config.js"
     },
     "devDependencies": {
         "@babel/core": "7.11.5",
@@ -35,6 +36,7 @@
         "@babel/preset-flow": "7.10.4",
         "@babel/register": "7.11.5",
         "babel-eslint": "10.1.0",
+        "babel-jest": "26.3.0",
         "babel-loader": "8.1.0",
         "circular-dependency-plugin": "5.2.0",
         "eslint": "7.11.0",
@@ -44,7 +46,9 @@
         "eslint-plugin-jsdoc": "30.7.3",
         "eslint-plugin-prettier": "3.1.4",
         "flow-bin": "0.132.0",
+        "flow-typed": "3.2.1",
         "husky": "4.2.5",
+        "jest": "26.4.2",
         "lint-staged": "10.2.13",
         "prettier": "2.1.1",
         "webpack": "4.44.2",

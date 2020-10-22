@@ -1,14 +1,11 @@
 // @flow strict
 /* global StateType */
 /* global ActionType */
+/* global ReducerType */
+/* global GLOBAL_TYPE_FUNCTION */
 import { Table } from "./Table";
 import { Session } from "./Session";
 import type { Model } from "../model/Model";
-
-/**
- * Type constants.
- */
-const TYPE_FUNCTION: string = "function";
 
 /**
  * @author Daniel van Dijk <daniel@invidiacreative.net>
@@ -27,9 +24,9 @@ class Database {
     }
 
     /**
-     * @returns {Function}
+     * @returns {ReducerType}
      */
-    reducer(): (state: StateType, action: ActionType) => StateType {
+    reducer(): ReducerType {
         /**
          * @param {StateType} [state]
          * @param {ActionType} action
@@ -131,7 +128,7 @@ class Database {
         action: ActionType
     ): void {
         session.getModels().forEach((ModelClass: Class<Model>): void => {
-            if (typeof ModelClass.reducer === TYPE_FUNCTION) {
+            if (typeof ModelClass.reducer === GLOBAL_TYPE_FUNCTION) {
                 ModelClass.reducer(action);
             } else {
                 // No reducer defined for this model.

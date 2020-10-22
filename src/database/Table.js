@@ -7,11 +7,6 @@
 import type { Model } from "../model/Model";
 import { HadesValidationError } from "../objects/errors/HadesValidationError";
 
-type RowStorageType = {|
-    // eslint-disable-next-line flowtype/no-weak-types
-    [key: ModelIdentifierType]: any,
-|};
-
 opaque type MetaStorageType = {|
     lastIdIncremental: number,
     idBlacklist: Array<number>,

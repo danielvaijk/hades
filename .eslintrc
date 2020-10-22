@@ -677,6 +677,7 @@
     },
     "plugins": ["flowtype", "jsdoc", "import", "prettier"],
     "env": {
+        "jest": true,
         // This also automatically sets parserOptions.ecmaVersion to '11'.
         "es2020": true,
         "browser": true

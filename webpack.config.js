@@ -4,6 +4,15 @@ import path from "path";
 import { DefinePlugin } from "webpack";
 import CircularDependencyPlugin from "circular-dependency-plugin";
 
+import {
+    GLOBAL_INDEX_INVALID,
+    GLOBAL_TYPE_FUNCTION,
+    GLOBAL_TYPE_UNDEFINED,
+    GLOBAL_SEPARATOR_SPACE,
+    GLOBAL_DEFAULT_KEY_NAME_ID,
+    // $FlowIgnore FIXME:
+} from "./src/definitions/globals";
+
 /**
  * Path constants.
  */
@@ -15,11 +24,6 @@ const PATH_ABSOLUTE_DISTRIBUTION: string = path.resolve(__dirname, "dist");
  */
 const REGEX_FILE_JAVASCRIPT: RegExp = /.js$/u;
 const REGEX_DIRECTORY_NODE_MODULES: RegExp = /node_modules/u;
-
-/**
- * Index constants.
- */
-const INDEX_INVALID: number = -1;
 
 export default {
     mode: "production",
@@ -33,10 +37,13 @@ export default {
     },
     plugins: [
         new DefinePlugin({
-            GLOBAL_INDEX_INVALID: INDEX_INVALID,
-            GLOBAL_SEPARATOR_SPACE: JSON.stringify(" "),
-            GLOBAL_DEFAULT_KEY_NAME_ID: JSON.stringify("id"),
-            GLOBAL_TYPE_UNDEFINED: JSON.stringify("undefined"),
+            GLOBAL_INDEX_INVALID,
+            GLOBAL_TYPE_FUNCTION: JSON.stringify(GLOBAL_TYPE_FUNCTION),
+            GLOBAL_TYPE_UNDEFINED: JSON.stringify(GLOBAL_TYPE_UNDEFINED),
+            GLOBAL_SEPARATOR_SPACE: JSON.stringify(GLOBAL_SEPARATOR_SPACE),
+            GLOBAL_DEFAULT_KEY_NAME_ID: JSON.stringify(
+                GLOBAL_DEFAULT_KEY_NAME_ID
+            ),
         }),
         new CircularDependencyPlugin({
             failOnError: true,
