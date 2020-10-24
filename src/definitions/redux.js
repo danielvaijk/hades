@@ -1,13 +1,17 @@
 // @flow strict
+/* eslint-disable flowtype/no-weak-types */
 declare type StateType = {|
-    // eslint-disable-next-line flowtype/no-weak-types
     [key: string]: any,
 |};
+
+declare type PayloadType = {|
+    [key: string]: any,
+|};
+/* eslint-enable flowtype/no-weak-types */
 
 declare type ActionType = {|
     type: string,
     payload?: PayloadType,
 |};
 
-declare type PayloadType = { ... };
 declare type ReducerType = (state: StateType, action: ActionType) => StateType;

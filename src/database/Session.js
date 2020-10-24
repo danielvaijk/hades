@@ -20,7 +20,7 @@ class Session {
      * @returns {void}
      */
     constructor(state: StateType): void {
-        this._state = state;
+        this._state = JSON.parse(JSON.stringify(state));
     }
 
     /**
