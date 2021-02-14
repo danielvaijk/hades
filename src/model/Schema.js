@@ -43,11 +43,15 @@ class Schema {
 
     /**
      * @param {TableRowType} fieldValues
+     * @param {boolean} isIdentifierRequired
      *
      * @returns {ModelFieldsType}
      * @throws {HadesValidationError}
      */
-    castValuesAgainstDefinition(fieldValues: TableRowType): ModelFieldsType {
+    castValuesAgainstDefinition(
+        fieldValues: TableRowType,
+        isIdentifierRequired: boolean
+    ): ModelFieldsType {
         const definedIdentifierFieldNameOrNull:
             | string
             | null = this.getDefinedIdentifierFieldNameOrNull();
@@ -56,10 +60,12 @@ class Schema {
 
         if (fieldValues[fieldNameIdentifier]) {
             // Value for identifier field was provided.
-        } else {
+        } else if (isIdentifierRequired && definedIdentifierFieldNameOrNull) {
             throw new HadesValidationError(
                 `Value is required for identifier field '${fieldNameIdentifier}'.`
             );
+        } else {
+            // Value for identifier field was not provided but was also not required.
         }
 
         /**
@@ -77,10 +83,14 @@ class Schema {
                     ? fieldValue.getValue()
                     : fieldValue;
 
-            return {
-                ...fieldInstances,
-                [fieldName]: new FieldClass(fieldValues[fieldName]),
-            };
+            if (fieldValues[fieldName]) {
+                return {
+                    ...fieldInstances,
+                    [fieldName]: new FieldClass(fieldValues[fieldName]),
+                };
+            } else {
+                return fieldInstances;
+            }
         }
 
         /**

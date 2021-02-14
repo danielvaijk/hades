@@ -40,17 +40,25 @@ class Model {
         this._tableKey = this._ModelClass.tableKey;
         this._identifierKey = this._ModelClass.identifierKey;
 
-        const modelSchemaDefinition: Schema = this._ModelClass.fields();
-        const fieldValuesOrNull: Model | null = this._getFieldValuesFromTableOrNull();
+        const tableOrNull: Table | null = this._getTableInstanceOrNull();
 
-        if (fieldValuesOrNull) {
-            this._fields = modelSchemaDefinition.castValuesAgainstDefinition(
-                fieldValuesOrNull
+        if (tableOrNull === null) {
+            throw new HadesValidationError(
+                "Cannot get Model instance with missing Table."
             );
         } else {
-            throw new HadesValidationError(
-                `No data exists for Model instance with ID '${modelId}'.`
-            );
+            // TODO: For now we'll have to referece _rows directly if we want
+            // to maintain all constructed field class instances.
+            const tableRowsOrNull: Model | null =
+                tableOrNull._rows[this._modelId] ?? null;
+
+            if (tableRowsOrNull === null) {
+                throw new HadesValidationError(
+                    `No data exists for Model instance with ID '${modelId}'.`
+                );
+            } else {
+                this._fields = tableRowsOrNull;
+            }
         }
     }
 
@@ -174,22 +182,6 @@ class Model {
      */
     _getTableInstanceOrNull(): Table | null {
         return this?._session.getState()[this._tableKey ?? ""] || null;
-    }
-
-    /**
-     * @returns {Model|null}
-     * @throws {HadesValidationError}
-     */
-    _getFieldValuesFromTableOrNull(): Model | null {
-        const tableOrNull: Table | null = this._getTableInstanceOrNull();
-
-        if (tableOrNull) {
-            return tableOrNull.getRows()[this._modelId] || null;
-        } else {
-            throw new HadesValidationError(
-                "Cannot get Model instance with missing Table."
-            );
-        }
     }
 }
 
