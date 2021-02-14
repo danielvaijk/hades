@@ -1,6 +1,8 @@
 // @flow strict
+/* global ModelFieldsType, TableRowType */
 import type { Table } from "./Table";
 import type { Model } from "../model/Model";
+import type { Schema } from "../model/Schema";
 import type { Mutation } from "../objects/Mutation";
 import type { EnumEntry } from "../objects/EnumEntry";
 import { MutationTypeEnum } from "../objects/enums/MutationTypeEnum";
@@ -77,17 +79,12 @@ class Session {
         }
 
         const modelIdOrNull: number | null = mutation.getModelIdOrNull();
-        const fieldsOrNull: TableRowType | null = mutation.getFieldsOrNull();
         const willApplyToEntireTable: boolean = mutation.getWillApplyToEntireTable();
-
-        if (fieldsOrNull) {
-            ModelClass.fields().assertSchemaAllowsFieldsForMutation(
-                ModelClass,
-                fieldsOrNull
-            );
-        } else {
-            // No fields for this mutation type.
-        }
+        const fieldsOrNull: ModelFieldsType | null = this._getModelFieldsConvertedForMutationOrNull(
+            ModelClass,
+            mutation.getFieldsOrNull(),
+            type.equals(MutationTypeEnum.INSERT())
+        );
 
         if (type.equals(MutationTypeEnum.INSERT())) {
             this._applyInsertMutation(pointerModelTableOrNull, fieldsOrNull);
@@ -109,6 +106,35 @@ class Session {
             throw new HadesUnexpectedValueError(
                 `Unexpected mutation type '${type.getValue()}'.`
             );
+        }
+    }
+
+    /**
+     * @param {Class<Model>} ModelClass
+     * @param {TableRowType|null} fieldsOrNull
+     * @param {boolean} isIdentifierFieldRequired
+     *
+     * @returns {ModelFieldsType|null}
+     */
+    _getModelFieldsConvertedForMutationOrNull(
+        ModelClass: Class<Model>,
+        fieldsOrNull: TableRowType | null,
+        isIdentifierFieldRequired: boolean
+    ): ModelFieldsType | null {
+        if (fieldsOrNull) {
+            const modelSchema: Schema = ModelClass.fields();
+
+            modelSchema.assertSchemaAllowsFieldsForMutation(
+                ModelClass,
+                fieldsOrNull
+            );
+
+            return modelSchema.castValuesAgainstDefinition(
+                fieldsOrNull,
+                isIdentifierFieldRequired
+            );
+        } else {
+            return null;
         }
     }
 
@@ -153,14 +179,14 @@ class Session {
 
     /**
      * @param {Table} pointerTable
-     * @param {TableRowType|null} fieldsOrNull
+     * @param {ModelFieldsType|null} fieldsOrNull
      *
      * @returns {void}
      * @throws {HadesUnexpectedValueError}
      */
     _applyInsertMutation(
         pointerTable: Table,
-        fieldsOrNull: TableRowType | null
+        fieldsOrNull: ModelFieldsType | null
     ): void {
         if (fieldsOrNull) {
             pointerTable.insertRow(fieldsOrNull);
@@ -173,14 +199,14 @@ class Session {
 
     /**
      * @param {Table} pointerTable
-     * @param {TableRowType|null} fieldsOrNull
+     * @param {ModelFieldsType|null} fieldsOrNull
      *
      * @returns {void}
      * @throws {HadesUnexpectedValueError}
      */
     _applyUpsertMutation(
         pointerTable: Table,
-        fieldsOrNull: TableRowType | null
+        fieldsOrNull: ModelFieldsType | null
     ): void {
         if (fieldsOrNull) {
             pointerTable.upsertRow(fieldsOrNull);
@@ -193,7 +219,7 @@ class Session {
 
     /**
      * @param {Table} pointerTable
-     * @param {TableRowType|null} fieldsOrNull
+     * @param {ModelFieldsType|null} fieldsOrNull
      * @param {number|null} modelIdOrNull
      *
      * @returns {void}
@@ -201,7 +227,7 @@ class Session {
      */
     _applyUpdateMutation(
         pointerTable: Table,
-        fieldsOrNull: TableRowType | null,
+        fieldsOrNull: ModelFieldsType | null,
         modelIdOrNull: number | null
     ): void {
         if (fieldsOrNull === null) {

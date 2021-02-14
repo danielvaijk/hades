@@ -5,7 +5,7 @@
     "main": "dist/hades.min.js",
     "module": "dist/hades.min.js",
     "license": "MIT",
-    "bugs": "https://github.com/danielvaijk/hades/issues",
+    "bugs": "https://github.com/invidiacreative/hades/issues",
     "description": "Object-relational mapping for Redux.",
     "keywords": [
         "ORM",
@@ -20,7 +20,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/danielvaijk/hades.git"
+        "url": "https://github.com/invidiacreative/hades.git"
     },
     "author": {
         "name": "Daniel van Dijk",
