@@ -78,16 +78,23 @@ class Schema {
             fieldInstances: SchemaDefinitionType,
             [fieldName, fieldValue]: FieldInstancesType
         ): SchemaDefinitionType {
-            const FieldClass: FieldClassType =
-                fieldValue instanceof EnumEntry
-                    ? fieldValue.getValue()
-                    : fieldValue;
-
             if (fieldValues[fieldName]) {
-                return {
-                    ...fieldInstances,
-                    [fieldName]: new FieldClass(fieldValues[fieldName]),
-                };
+                const FieldClass: FieldClassType =
+                    fieldValue instanceof EnumEntry
+                        ? fieldValue.getValue()
+                        : fieldValue;
+
+                if (fieldValues[fieldName] instanceof FieldClass) {
+                    return {
+                        ...fieldInstances,
+                        [fieldName]: fieldValues[fieldName],
+                    };
+                } else {
+                    return {
+                        ...fieldInstances,
+                        [fieldName]: new FieldClass(fieldValues[fieldName]),
+                    };
+                }
             } else {
                 return fieldInstances;
             }
