@@ -1,7 +1,6 @@
 // @flow strict
 /* global TableRowType */
 /* global GLOBAL_INDEX_INVALID */
-/* global GLOBAL_TYPE_UNDEFINED */
 /* global GLOBAL_SEPARATOR_SPACE */
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import type { Model } from "../model/Model";
@@ -92,7 +91,7 @@ class Table {
 
         if (
             this._keyIdentifierOrNull &&
-            typeof columns[this._keyIdentifierOrNull] === GLOBAL_TYPE_UNDEFINED
+            typeof columns[this._keyIdentifierOrNull] === "undefined"
         ) {
             throw new HadesValidationError(
                 [
