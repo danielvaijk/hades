@@ -77,7 +77,9 @@ class Schema {
             fieldInstances: SchemaDefinitionType,
             [fieldName, fieldValue]: FieldInstancesType
         ): SchemaDefinitionType {
-            if (fieldValues[fieldName]) {
+            if (typeof fieldValues[fieldName] === "undefined") {
+                return fieldInstances;
+            } else {
                 const FieldClass: FieldClassType =
                     fieldValue instanceof EnumEntry
                         ? fieldValue.getValue()
@@ -94,8 +96,6 @@ class Schema {
                         [fieldName]: new FieldClass(fieldValues[fieldName]),
                     };
                 }
-            } else {
-                return fieldInstances;
             }
         }
 
