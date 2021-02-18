@@ -36,7 +36,6 @@ export default {
             GLOBAL_INDEX_INVALID: INDEX_INVALID,
             GLOBAL_SEPARATOR_SPACE: JSON.stringify(" "),
             GLOBAL_DEFAULT_KEY_NAME_ID: JSON.stringify("id"),
-            GLOBAL_TYPE_UNDEFINED: JSON.stringify("undefined"),
         }),
         new CircularDependencyPlugin({
             failOnError: true,

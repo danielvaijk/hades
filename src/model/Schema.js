@@ -2,7 +2,6 @@
 /* global TableRowType */
 /* global ModelFieldsType */
 /* global GLOBAL_INDEX_INVALID */
-/* global GLOBAL_TYPE_UNDEFINED */
 /* global GLOBAL_SEPARATOR_SPACE */
 /* global GLOBAL_DEFAULT_KEY_NAME_ID */
 import type { Model } from "./Model";
@@ -78,7 +77,9 @@ class Schema {
             fieldInstances: SchemaDefinitionType,
             [fieldName, fieldValue]: FieldInstancesType
         ): SchemaDefinitionType {
-            if (fieldValues[fieldName]) {
+            if (typeof fieldValues[fieldName] === "undefined") {
+                return fieldInstances;
+            } else {
                 const FieldClass: FieldClassType =
                     fieldValue instanceof EnumEntry
                         ? fieldValue.getValue()
@@ -95,8 +96,6 @@ class Schema {
                         [fieldName]: new FieldClass(fieldValues[fieldName]),
                     };
                 }
-            } else {
-                return fieldInstances;
             }
         }
 
@@ -147,7 +146,7 @@ class Schema {
         function isFieldSuperfluous(key: string): boolean {
             return (
                 fieldWhitelist.includes(key) === false &&
-                typeof this._schemaDefinition[key] === GLOBAL_TYPE_UNDEFINED
+                typeof this._schemaDefinition[key] === "undefined"
             );
         }
 
